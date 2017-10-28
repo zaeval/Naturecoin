@@ -41,10 +41,27 @@
                 android:textColor="#ffffff"
                 android:lineSpacingExtra="25.2sp"
                 tools:text="26.00 NTC"
+                android:id="@+id/ntc_tv"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="46dp"
                 android:layout_centerHorizontal="true"
                 android:text="26.00 NTC" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13.8sp"
+                android:fontFamily="sans-serif-light"
+                android:textStyle="normal"
+                android:textColor="#ffffff"
+                android:lineSpacingExtra="41.1sp"
+                android:gravity="center_horizontal"
+                tools:text="13.00 USD"
+                android:text="13.00 USD"
+                android:id="@+id/usd_tv"
+                android:layout_below="@+id/imageView2"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="16dp" />
 
         </RelativeLayout>
 

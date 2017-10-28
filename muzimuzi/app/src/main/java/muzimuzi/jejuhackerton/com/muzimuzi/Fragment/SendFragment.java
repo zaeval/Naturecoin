@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
 
 public class SendFragment extends Fragment {
@@ -59,6 +60,9 @@ public class SendFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_send, container, false);
+        senderET = (EditText) rootView.findViewById(R.id.sender);
+        senderET.setText(Util.getMacAddress2Hash(getContext()));
+        senderET.setEnabled(false);
         return rootView;
     }
 
