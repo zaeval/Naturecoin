@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/tab_home"
+        android:icon="@drawable/ic_home"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:title="home" />
+    <item
+        android:id="@+id/tab_qrcode"
+        android:icon="@drawable/ic_qrcode"
+        app:showAsAction="ifRoom"
+        android:title="qrcode" />
+    <item
+        android:id="@+id/tab_scan"
+        android:icon="@drawable/ic_scan"
+        app:showAsAction="ifRoom"
+        android:title="scan" />
+    <item
+        android:id="@+id/tab_send"
+        android:icon="@drawable/ic_send"
+        app:showAsAction="ifRoom"
+        android:title="send" />
+    <item
+        android:id="@+id/tab_setting"
+        android:icon="@drawable/ic_setting"
+        app:showAsAction="ifRoom"
+        android:title="setting" />
+</menu>

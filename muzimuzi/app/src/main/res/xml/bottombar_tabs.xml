@@ -1,0 +1,22 @@
+<xml>
+    <tab
+        id="@+id/tab_home"
+        icon="@drawable/ic_home"
+        title="home" />
+    <tab
+        id="@+id/tab_qrcode"
+        icon="@drawable/ic_qrcode"
+        title="qrcode" />
+    <tab
+        id="@+id/tab_scan"
+        icon="@drawable/ic_scan"
+        title="scan" />
+    <tab
+        id="@+id/tab_send"
+        icon="@drawable/ic_send"
+        title="send" />
+    <tab
+        id="@+id/tab_setting"
+        icon="@drawable/ic_setting"
+        title="setting" />
+</xml>
