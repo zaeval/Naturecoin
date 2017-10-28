@@ -31,6 +31,12 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/icon_coin" />
+            <ImageView
+                android:id="@+id/point"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                />
 
         </RelativeLayout>
 
@@ -100,7 +106,27 @@
                         android:layout_marginRight="10dp"
                         android:background="#000000"
                         ></RelativeLayout>
-                    <
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13.3sp"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="normal"
+                        android:textColor="#cc101010"
+                        tools:text="2.1 km"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textSize="13.5sp"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="sans-serif-light"
+                        android:textStyle="normal"
+                        android:textColor="#7f101010"
+                        tools:text="284-12, Ilchul-ro, Seongsan-eup.."
+                        />
                 </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
