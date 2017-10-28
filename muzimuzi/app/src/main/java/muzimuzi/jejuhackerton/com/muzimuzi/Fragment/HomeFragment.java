@@ -1,5 +1,6 @@
 package muzimuzi.jejuhackerton.com.muzimuzi.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -7,10 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
+import muzimuzi.jejuhackerton.com.muzimuzi.LogActivity;
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -20,6 +23,7 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    RelativeLayout pointBanner;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -57,9 +61,16 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-
+        pointBanner = (RelativeLayout) rootView.findViewById(R.id.point_banner);
+        pointBanner.setOnClickListener(this);
         return rootView;
     }
 
 
+    @Override
+    public void onClick(View view) {
+        if(view == pointBanner){
+            ((AppCompatActivity)getActivity()).startActivity(new Intent(getContext(),LogActivity.class));
+        }
+    }
 }
