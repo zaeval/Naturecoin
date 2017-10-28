@@ -6,12 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="muzimuzi.jejuhackerton.com.muzimuzi.MainActivity">
-
     <muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager
         android:id="@+id/viewpager"
         android:layout_height="fill_parent"
         android:layout_width="fill_parent"
-        android:background="#FFFFFF">
+        android:background="#E5E5E5">
     </muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager>
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
@@ -20,6 +19,19 @@
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         app:bb_tabXmlResource="@xml/bottombar_tabs"
+        app:bb_activeTabColor="#51C4C1"
+        app:bb_inActiveTabColor="#51C4C1"
+        app:bb_inActiveTabAlpha="0.5"
         android:background="#F1F1F1"
         app:bb_behavior="shifting|underNavbar"/>
+    <android.support.v7.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:minHeight="46dp"
+        android:background="#55000000">
+    </android.support.v7.widget.Toolbar>
+
 </android.support.design.widget.CoordinatorLayout>

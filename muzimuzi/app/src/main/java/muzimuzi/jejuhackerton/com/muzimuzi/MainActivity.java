@@ -1,9 +1,9 @@
 package muzimuzi.jejuhackerton.com.muzimuzi;
 
-import android.support.annotation.IdRes;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -11,6 +11,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 import muzimuzi.jejuhackerton.com.muzimuzi.Adapter.MainViewPagerAdapter;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
