@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 
@@ -18,7 +19,9 @@ public class SendFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    public EditText senderET;
+    public EditText recipientET;
+    public EditText amountET;
 
     public SendFragment() {
         // Required empty public constructor
@@ -55,7 +58,8 @@ public class SendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scan, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
+        return rootView;
     }
 
 }
