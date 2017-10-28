@@ -40,6 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.R.attr.dial;
 import static android.R.attr.targetSdkVersion;
 
 
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MaterialDialog loadingDialog;
     private MainViewPagerAdapter adapter;
     boolean first_check=true;
+    private BottomBar bottomBar;
     @Override
     protected void onPause() {
         super.onPause();
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
-        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        bottomBar = (BottomBar) findViewById(R.id.bottomBar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -257,11 +259,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onQRCodeRead(String text, PointF[] points) {
                 qrCodeReaderView.stopCamera();
-                Message message = handler.obtainMessage(); // 메시지 ID 설정
-                message.obj = text;
-                handler.sendMessage(message);
                 Util.recipient=text;
-                new MaterialDialog.Builder(getApplicationContext())
+                resultDialog = new MaterialDialog.Builder(MainActivity.this)
+                        .content("보낼사람 : " + text + " 맞습니까?")
+                        .positiveText("예")
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -270,12 +271,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     message.what = 1; // 메시지 내용 설정 (int)
                                     handler.sendMessage(message);
                                 }
-                                else if(dialog == resultDialog2) {
-                                    resultDialog2.dismiss();
-                                }
+
                             }
 
                         })
+                        .negativeText("아니오")
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -284,12 +284,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     Message message = handler.obtainMessage(); // 메시지 ID 설정
                                     message.what = 0; // 메시지 내용 설정 (int)
                                     handler.sendMessage(message);
+                                    Util.recipient="";
                                 }
-                                else if(dialog == resultDialog2) {
-                                    resultDialog2.dismiss();
-                                }
+
                             }
-                        });
+                        })
+                        .show();
+
             }
         });
 
@@ -303,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(msg.what == 1) {
                 resultDialog.dismiss();
                 viewPager.setCurrentItem(3);
+                bottomBar.selectTabAtPosition(3);
 
             }
             else if(msg.what == 0) {
@@ -310,16 +312,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-    final Handler dialogHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg){
-            String text = (String)msg.obj;
-            resultDialog = new MaterialDialog.Builder(getApplicationContext())
-                    .content("보낼사람 : " + text + " 맞습니까?")
-                    .positiveText("예")
-                    .negativeText("아니오")
-                    .show();
-        }
-    };
+
 }
 
