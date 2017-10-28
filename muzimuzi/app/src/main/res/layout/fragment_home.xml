@@ -18,9 +18,9 @@
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:background="@drawable/bg_tap_b"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true">
+                android:background="@drawable/bg_tap_b">
 
             </ImageView>
 
@@ -28,24 +28,81 @@
                 android:id="@+id/imageView2"
                 android:layout_width="168dp"
                 android:layout_height="140dp"
-                android:background="@drawable/icon_coin"
+                android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                android:background="@drawable/icon_coin" />
 
         </RelativeLayout>
+
         <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/card_view"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
-            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:padding="0dp"
             card_view:cardCornerRadius="3dp"
             card_view:cardElevation="3dp">
 
-           <ImageView
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp"
+                android:background="@drawable/bg_main_map" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/card_view2"
+            android:layout_width="match_parent"
+            android:layout_height="116dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="0dp"
+            android:padding="0dp"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="74dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="13dp"
+                    android:layout_marginBottom="13dp"
+                    android:layout_marginRight="13dp"
+                    android:layout_marginLeft="15dp"
+
+                    android:background="@drawable/img_spot_sample" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:textStyle="normal"
+                        android:textColor="#454545"
+                        tools:text="Seongsan Sunrise Peak"
+                        android:layout_marginLeft="13dp"
+                        android:layout_marginTop="13dp"
+                        />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="#000000"
+                        ></RelativeLayout>
+                    <
+                </LinearLayout>
+            </LinearLayout>
         </android.support.v7.widget.CardView>
     </LinearLayout>
 </FrameLayout>
