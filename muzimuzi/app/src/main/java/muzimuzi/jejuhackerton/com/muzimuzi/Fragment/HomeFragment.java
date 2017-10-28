@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.LogActivity;
@@ -63,6 +64,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         pointBanner = (RelativeLayout) rootView.findViewById(R.id.point_banner);
         pointBanner.setOnClickListener(this);
+
         return rootView;
     }
 

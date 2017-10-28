@@ -1,14 +1,18 @@
 package muzimuzi.jejuhackerton.com.muzimuzi.Fragment;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import net.glxn.qrgen.android.QRCode;
+
+import org.w3c.dom.Text;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
@@ -24,6 +28,7 @@ public class QrcodeFragment extends Fragment {
     private String mParam2;
 
     private ImageView imageView;
+    private TextView walletCodeView;
     public QrcodeFragment() {
         // Required empty public constructor
     }
@@ -50,8 +55,12 @@ public class QrcodeFragment extends Fragment {
         imageView = rootView.findViewById(R.id.image_view);
         Bitmap myBitmap = QRCode.from(Util.myWalletAddress).bitmap();
         imageView.setImageBitmap(myBitmap);
+
+        walletCodeView = (TextView) rootView.findViewById(R.id.wallet_code);
+        walletCodeView.setText(Util.myWalletAddress);
+
+
         return rootView;
     }
-
 
 }

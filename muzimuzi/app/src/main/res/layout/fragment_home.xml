@@ -16,16 +16,6 @@
             android:layout_height="250dp">
 
             <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/bg_tap_b">
-
-            </ImageView>
-
-            <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="128dp"
                 android:layout_height="110dp"
@@ -40,11 +30,21 @@
                 android:textStyle="bold"
                 android:textColor="#ffffff"
                 android:lineSpacingExtra="25.2sp"
-                tools:text="26.00 Point"
+                tools:text="26.00 NTC"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="46dp"
                 android:layout_centerHorizontal="true"
-                android:text="26.00 Point" />
+                android:text="26.00 NTC" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="@drawable/bg_tap_b"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+            </ImageView>
 
         </RelativeLayout>
 
