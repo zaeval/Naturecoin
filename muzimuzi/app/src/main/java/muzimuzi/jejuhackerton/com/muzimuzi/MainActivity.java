@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -32,6 +33,7 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.Adapter.MainViewPagerAdapter;
 import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.ScanFragment;
+import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.SendFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Bin;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
@@ -145,7 +147,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         qrCodeReaderView.stopCamera();
                         qrCodeReaderView.setVisibility(View.INVISIBLE);
                     }
-
+//                    ((EditText)((SendFragment)adapter.getItem(3)).getView().findViewById(R.id.receipient)).setText(Util.recipient);
+//                    ((SendFragment)getSupportFragmentManager().findFragmentById(R.id.send_fragment)).setText(Util.recipient);
+//                    ((SendFragment)getFragmentManager().findFragmentById(R.id.send_fragment)).changeText(Util.recipient);
+//                    ((SendFragment)adapter.getItem(3)).setText(Util.recipient);
+                    SendFragment.recipientET.setText(Util.recipient);
                 } else if (position == 4) {
                     ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_setting));

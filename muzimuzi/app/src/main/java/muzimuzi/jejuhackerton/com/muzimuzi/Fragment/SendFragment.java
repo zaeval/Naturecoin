@@ -1,14 +1,25 @@
 package muzimuzi.jejuhackerton.com.muzimuzi.Fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Bin;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class SendFragment extends Fragment {
@@ -21,9 +32,11 @@ public class SendFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     public EditText senderET;
-    public EditText recipientET;
+    public static EditText recipientET;
     public EditText amountET;
-
+    public Button sendBtn;
+    MaterialDialog loadingDialog;
+    MaterialDialog resultDialog;
     public SendFragment() {
         // Required empty public constructor
     }
@@ -63,7 +76,64 @@ public class SendFragment extends Fragment {
         senderET = (EditText) rootView.findViewById(R.id.sender);
         senderET.setText(Util.getMacAddress2Hash(getContext()));
         senderET.setEnabled(false);
+        recipientET = (EditText) rootView.findViewById(R.id.receipient);
+        recipientET.setText("");
+        amountET = (EditText)rootView.findViewById(R.id.amount);
+        sendBtn = (Button) rootView.findViewById(R.id.send);
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BlockChainService blockChainService = BlockChainService.retrofit.create(BlockChainService.class);
+
+//            Call<Bin> call = blockChainService.newTransactions((new BlockChainService.Transaction(text,Util.sha256(address),1.0f).getJSON()));
+                loadingDialog = new MaterialDialog.Builder(getContext())
+                        .title("처리중입니다")
+                        .content("조금만 기다려 주십시오.")
+                        .progress(true, 0)
+                        .show();
+
+                resultDialog = new MaterialDialog.Builder(getContext())
+                        .content("처리가 완료되었습니다.")
+                        .positiveText("확인")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                resultDialog.dismiss();
+                            }
+                        })
+                        .show();
+                resultDialog.hide();
+                Call<Bin> call = blockChainService.newTransactions(senderET.getText().toString(),recipientET.getText().toString(),Float.valueOf(amountET.getText().toString()));
+                call.enqueue(new Callback<Bin>() {
+                    @Override
+                    public void onResponse(Call<Bin> call,
+                                           Response<Bin> response) {
+                        if (response.code() == 201) {
+                            loadingDialog.dismiss();
+                            resultDialog.show();
+
+                        } else {
+                            Log.d("sibal", response.message());
+                            resultDialog.setContent(response.message());
+                            resultDialog.show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Bin> call, Throwable t) {
+                        Log.d("sibal", t.getMessage());
+
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
         return rootView;
+    }
+    public void setText(String text){
+        View view = getView();
+        EditText textView = (EditText) view.findViewById(R.id.receipient);
+        textView.setText(text);
     }
 
 }
