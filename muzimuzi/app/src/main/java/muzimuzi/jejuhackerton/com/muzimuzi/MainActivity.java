@@ -23,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
         MainViewPagerAdapter adapter = new MainViewPagerAdapter(getSupportFragmentManager(), bottomBar.getTabCount());
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(5);
 
         Util.myWalletAddress = Util.getMacAddress2Hash(getApplicationContext());
 
