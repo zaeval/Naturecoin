@@ -259,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onQRCodeRead(String text, PointF[] points) {
                 qrCodeReaderView.stopCamera();
+                qrCodeReaderView.setVisibility(View.INVISIBLE);
                 Util.recipient=text;
                 resultDialog = new MaterialDialog.Builder(MainActivity.this)
                         .content("보낼사람 : " + text + " 맞습니까?")
@@ -286,11 +287,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     handler.sendMessage(message);
                                     Util.recipient="";
                                 }
-
                             }
                         })
                         .show();
-
             }
         });
 
@@ -309,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(msg.what == 0) {
                 resultDialog.dismiss();
+                qrCodeReaderView.startCamera();
+                qrCodeReaderView.setVisibility(View.VISIBLE);
+
             }
         }
     };
