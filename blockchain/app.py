@@ -201,6 +201,12 @@ def mine():
 
     # Forge the new Block by adding it to the chain
     block = blockchain.new_block(proof)
+    with open('chain.json', 'w') as outfile:
+        log = {
+                'chain' : blockchain.chain
+              }
+        json.dump(log, outfile)
+
 
     response = {
         'message': "New Block Forged",
@@ -279,7 +285,9 @@ def root():
 
 @app.route('/visualize', methods=['GET'])
 def visualize():
-    return render_template("visualize.html", title = 'Status')
+    with open('chain.json') as data_file:
+        data = json.load(data_file)
+    return render_template("visualize.html", title = 'Status', response=data)
 
 
 

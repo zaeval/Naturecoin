@@ -1,0 +1,1 @@
+{"chain": [{"index": 1, "timestamp": 1509191313.541995, "transactions": [], "proof": 100, "previous_hash": "1"}, {"index": 2, "timestamp": 1509191316.614103, "transactions": [{"sender": "0", "recipient": "80cbb89e45ce4936b644c319d85743ae", "amount": 1}], "proof": 35293, "previous_hash": "83a05336e211ce5920c3ed1fbd6f9e0d7246a802b2633506c532d9ae02a150d2"}]}
