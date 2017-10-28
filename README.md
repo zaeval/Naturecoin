@@ -1,4 +1,10 @@
 # Naturecoin
 ---
 
-Naturecoin is a altcoin for sustainable environment.
+Naturecoin is a altcoin for sustainable environment. The coin is based on blockchain system.
+The system can be managed sustainably with 7 features.
+
+## 1. Supply chain management
+---
+All supply and demand is recorded in blockchain server so the whole economy can be monitored.
+This enables to release the adequate amount of currency in the economy.
