@@ -3,9 +3,12 @@ package muzimuzi.jejuhackerton.com.muzimuzi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.roughike.bottombar.BottomBar;
@@ -61,11 +64,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(5);
 
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0){
+                    ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.VISIBLE);
+                    ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_naturecoin));
+                }
+                else if(position == 1){
+
+                    ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
+                    ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_receive));
+                }
+                else if(position == 2){
+
+                    ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
+                    ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_scan));
+                }
+                else if(position == 3){
+
+                    ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
+                    ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_send));
+                }
+                else if(position == 4){
+
+                    ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
+                    ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_setting));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
         Util.myWalletAddress = Util.getMacAddress2Hash(getApplicationContext());
 
         pointBanner = (RelativeLayout) findViewById(R.id.point_banner);
-
-
 
     }
 
