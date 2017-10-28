@@ -23,8 +23,8 @@ Blockchain technology enables users to send money without any bank account or me
 ---
 If you want to support or fund our project, here are contacts and bitcoin address:
 
-- contact(Founder): [hskang9@gmmail.com](mailto:hskang9@gmail.com)
+- contact(Founder): [hskang9@gmail.com](mailto:hskang9@gmail.com)
 
 - address: 1ASgdHTtHit9jSey8ZWz5NMkgkC3k5EaUB
 
-<p align="center"><img width="40%" src="img/bitcoin_adress.jpg" /></p>
+<p align="center"><img width="40%" src="img/bitcoin_adress.jpeg" /></p>
