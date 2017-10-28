@@ -126,8 +126,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (qrCodeReaderView != null) {
                         qrCodeReaderView.stopCamera();
                         qrCodeReaderView.setVisibility(View.INVISIBLE);
-                        HomeFragment.ntc.setText(Util.sum +" ntc");
                     }
+                    HomeFragment.ntc.setText(Util.sum +" NTC");
+
                 } else if (position == 1) {
                     ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_receive));
@@ -174,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Util.myWalletAddress = Util.getMacAddress2Hash(getApplicationContext());
 
         pointBanner = (RelativeLayout) findViewById(R.id.point_banner);
-
 
     }
 

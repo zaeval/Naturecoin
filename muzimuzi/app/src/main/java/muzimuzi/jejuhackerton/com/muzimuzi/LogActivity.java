@@ -67,18 +67,18 @@ public class LogActivity extends AppCompatActivity {
                                 for (int i = 0; i < chainObjects.size(); i++) {
                                     List<Transaction> transactions = chainObjects.get(i).getTransactions();
                                     for (int j = 0; j < transactions.size(); j++) {
-                                        Log.d("sibal", transactions.get(j).getSender());
+                                        Log.d("sibal", transactions.get(j).getSender() + " "+transactions.get(j).getRecipient());
                                         if (transactions.get(j).getSender().equals(Util.getMacAddress2Hash(getApplicationContext()))) {
-                                            li.add(transactions.get(j));
-                                            ((ItemRecyclerAdapter)recyclerView.getAdapter()).add(transactions.get(j));
-                                            ((ItemRecyclerAdapter)recyclerView.getAdapter()).notifyDataSetChanged();
+                                            itemRecyclerAdapter.add(transactions.get(j));
+                                            Log.d("sibal", "got");
+
                                             Util.sum-=transactions.get(j).getAmount();
 
-                                        } else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash(getApplicationContext()))) {
-                                            li.add(transactions.get(j));
-                                            ((ItemRecyclerAdapter)recyclerView.getAdapter()).add(transactions.get(j));
+                                        }
+                                        else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash(getApplicationContext()))) {
+                                            itemRecyclerAdapter.add(transactions.get(j));
+                                            Log.d("sibal", "got");
 
-                                            ((ItemRecyclerAdapter)recyclerView.getAdapter()).notifyDataSetChanged();
                                             Util.sum+=transactions.get(j).getAmount();
 
                                         }
