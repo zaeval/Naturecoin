@@ -61,6 +61,7 @@ public class LogActivity extends AppCompatActivity {
                         public void onResponse(Call<Chain> call,
                                                Response<Chain> response) {
                             if (response.code() == 200) {
+                                Util.sum=100;
                                 Log.d("sibal",  "wallet id : "+Util.getMacAddress2Hash(getApplicationContext()));
                                 Chain chain = response.body();
                                 List<ChainObject> chainObjects = chain.getChain();
