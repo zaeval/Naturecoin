@@ -43,6 +43,7 @@
                         android:hint="sender : "
                         android:inputType="textPersonName"
                         android:text="sender : "
+                        android:editable="false"
                         tools:text="sender : " />
 
                     <EditText

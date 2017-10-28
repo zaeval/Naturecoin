@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MaterialDialog resultDialog2;
     private MaterialDialog loadingDialog;
     private MainViewPagerAdapter adapter;
+    boolean first_check=true;
     @Override
     protected void onPause() {
         super.onPause();
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else if (position == 2) {
                     ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_scan));
-                    loadingCheck = true;
                     checkingPermission();
 
                 } else if (position == 3) {
@@ -175,10 +175,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("sibal", "not permissioned");
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_CAMERA);
             } else {
+                Log.d("sibal", "yes permissioned "+first_check);
+
                 permissionCheck = false;
-                openCamera();
+                if(first_check) {
+                    openCamera();
+                    first_check=false;
+                    Log.d("sibal", "here are start first");
+
+                }
+                else{
+                    Log.d("sibal", "here are start secondary");
+
+                    qrCodeReaderView.startCamera();
+                    qrCodeReaderView.setVisibility(View.VISIBLE);
+                }
             }
         }
+        permissionCheck=true;
     }
 
     @Override
