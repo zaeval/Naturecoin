@@ -5,7 +5,8 @@ from urllib.parse import urlparse
 from uuid import uuid4
 
 import requests
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
+
 
 
 class Blockchain:
@@ -174,7 +175,7 @@ class Blockchain:
 
 
 # Instantiate the Node
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -273,9 +274,8 @@ def consensus():
     return jsonify(response), 200
 
 @app.route('/', methods=['GET'])
-def index():
-    
-    return '<h1>API server launched</h1>', 200
+def root():
+    return render_template("index.html", title = 'Projects')
 
 
 
