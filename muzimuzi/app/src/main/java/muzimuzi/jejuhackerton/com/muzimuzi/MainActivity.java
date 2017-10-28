@@ -1,14 +1,18 @@
 package muzimuzi.jejuhackerton.com.muzimuzi;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,6 +21,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.roughike.bottombar.BottomBar;
@@ -27,32 +32,35 @@ import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.ScanFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
+import static android.R.attr.targetSdkVersion;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private CustomViewPager viewPager;
     private RelativeLayout pointBanner;
-    private QRCodeReaderView qrCodeReaderView;
+    private QRCodeReaderView qrCodeReaderView = null;
     private boolean loadingCheck;
     private int MY_PERMISSIONS_CAMERA = 133;
+    private boolean permissionCheck = true;
+    private MaterialDialog resultDialog;
     @Override
     protected void onPause() {
         super.onPause();
-        qrCodeReaderView.stopCamera();
+        if(qrCodeReaderView!=null)
+            qrCodeReaderView.stopCamera();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkCameraPermissions();
+        if(qrCodeReaderView!=null)
+            qrCodeReaderView.startCamera();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
 
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
@@ -61,17 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        qrCodeReaderView.setOnQRCodeReadListener(new QRCodeReaderView.OnQRCodeReadListener(){
-
-            @Override
-            public void onQRCodeRead(String text, PointF[] points) {
-                loadingCheck = false;
-
-            }
-        });
-
-        qrCodeReaderView.setVisibility(View.INVISIBLE);
 
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
@@ -113,38 +110,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(position == 0){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.VISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_naturecoin));
-                    qrCodeReaderView.stopCamera();
-                    qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    if(qrCodeReaderView!=null) {
+                        qrCodeReaderView.stopCamera();
+                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    }
                 }
                 else if(position == 1){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_receive));
-                    qrCodeReaderView.stopCamera();
-                    qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    if(qrCodeReaderView!=null) {
+
+                        qrCodeReaderView.stopCamera();
+                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    }
                 }
                 else if(position == 2){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_scan));
                     loadingCheck = true;
-                    checkCameraPermissions();
-
-
-
-
-
+                    checkingPermission();
 
                 }
                 else if(position == 3){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_send));
-                    qrCodeReaderView.stopCamera();
-                    qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    if(qrCodeReaderView!=null) {
+
+                        qrCodeReaderView.stopCamera();
+                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    }
                 }
                 else if(position == 4){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_setting));
-                    qrCodeReaderView.stopCamera();
-                    qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    if(qrCodeReaderView!=null) {
+
+                        qrCodeReaderView.stopCamera();
+                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
 
@@ -160,20 +163,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
+    @TargetApi(Build.VERSION_CODES.M)
+    public void checkingPermission(){
+        while(permissionCheck) {
+            if (selfPermissionGranted(Manifest.permission.CAMERA, this) == false) {
+                Log.d("sibal", "not permissioned");
+                requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_CAMERA);
+            }
+            else{
+                permissionCheck=false;
+                openCamera();
+            }
+        }
+    }
     @Override
     public void onClick(View view) {
 
     }
-    public void checkCameraPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("sibal","here");
-            openCamera();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, MY_PERMISSIONS_CAMERA);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("sibal","here r");
+
+        if (requestCode == MY_PERMISSIONS_CAMERA) {
+            if (grantResults.length!=0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("sibal","allowed");
+                loadingCheck = true;
+                permissionCheck=false;
+                openCamera();
+            }
         }
     }
+    public boolean selfPermissionGranted(String permission,Context context) {
+        // For Android < Android M, self permissions are always granted.
+        boolean result = true;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (targetSdkVersion >= Build.VERSION_CODES.M) {
+                // targetSdkVersion >= Android M, we can
+                // use Context#checkSelfPermission
+                result = context.checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
+            } else {
+                // targetSdkVersion < Android M, we have to use PermissionChecker
+                result = PermissionChecker.checkSelfPermission(context, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
+        }
+
+        return result;
+    }
+
     public void openCamera(){
+        qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
+
         // Use this function to enable/disable decoding
         qrCodeReaderView.setQRDecodingEnabled(true);
 
@@ -188,16 +231,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Use this function to set back camera preview
         qrCodeReaderView.setBackCamera();
+        qrCodeReaderView.setOnQRCodeReadListener(new QRCodeReaderView.OnQRCodeReadListener(){
+
+            @Override
+            public void onQRCodeRead(String text, PointF[] points) {
+                qrCodeReaderView.stopCamera();
+                resultDialog = new MaterialDialog.Builder(getApplicationContext())
+                        .content("보낼사람 : "+text+" 맞습니까?")
+                        .positiveText("예")
+                        .negativeText("아니오")
+                        .show();
+            }
+        });
+
         qrCodeReaderView.setVisibility(View.VISIBLE);
 
+    }
 
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_CAMERA) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            }
-        }
-    }
 }
