@@ -1,6 +1,7 @@
 package muzimuzi.jejuhackerton.com.muzimuzi;
 
 import android.content.Intent;
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.view.ViewPager;
@@ -11,22 +12,41 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.Adapter.MainViewPagerAdapter;
+import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.ScanFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    CustomViewPager viewPager;
-    RelativeLayout pointBanner;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    private CustomViewPager viewPager;
+    private RelativeLayout pointBanner;
+    private QRCodeReaderView qrCodeReaderView;
+    private boolean loadingCheck;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
+
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
@@ -75,26 +95,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(position == 0){
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.VISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_naturecoin));
+                    qrCodeReaderView.stopCamera();
+                    qrCodeReaderView.setVisibility(View.INVISIBLE);
                 }
                 else if(position == 1){
-
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_receive));
+                    qrCodeReaderView.stopCamera();
+                    qrCodeReaderView.setVisibility(View.INVISIBLE);
                 }
                 else if(position == 2){
-
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_scan));
+                    loadingCheck = true;
+                    qrCodeReaderView.setVisibility(View.VISIBLE);
+
+                    qrCodeReaderView.setOnQRCodeReadListener(new QRCodeReaderView.OnQRCodeReadListener(){
+
+                        @Override
+                        public void onQRCodeRead(String text, PointF[] points) {
+                            loadingCheck = false;
+
+                        }
+                    });
+
+                    // Use this function to enable/disable decoding
+                    qrCodeReaderView.setQRDecodingEnabled(true);
+
+                    // Use this function to change the autofocus interval (default is 5 secs)
+                    qrCodeReaderView.setAutofocusInterval(2000L);
+
+                    // Use this function to enable/disable Torch
+                    qrCodeReaderView.setTorchEnabled(true);
+
+                    // Use this function to set front camera preview
+                    qrCodeReaderView.setFrontCamera();
+
+                    // Use this function to set back camera preview
+                    qrCodeReaderView.setBackCamera();
+                    qrCodeReaderView.startCamera();
                 }
                 else if(position == 3){
-
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_send));
+                    qrCodeReaderView.stopCamera();
+                    qrCodeReaderView.setVisibility(View.INVISIBLE);
                 }
                 else if(position == 4){
-
                     ((ImageView)findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView)findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_setting));
+                    qrCodeReaderView.stopCamera();
+                    qrCodeReaderView.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -107,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Util.myWalletAddress = Util.getMacAddress2Hash(getApplicationContext());
 
         pointBanner = (RelativeLayout) findViewById(R.id.point_banner);
+
 
     }
 

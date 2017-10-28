@@ -14,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class Util {
     public static String myWalletAddress = "";
+    public static String recipient = "";
     public static String sha256(String str){
 
         String SHA = "";

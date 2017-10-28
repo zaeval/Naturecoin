@@ -12,7 +12,14 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="#E5E5E5"></muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager>
-
+    <com.dlazaro66.qrcodereaderview.QRCodeReaderView
+        android:id="@+id/qrdecoderview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="46dp"
+        android:layout_alignParentTop="true"
+        android:visibility="invisible"
+        android:layout_alignParentStart="true" />
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
