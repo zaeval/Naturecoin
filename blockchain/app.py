@@ -275,7 +275,11 @@ def consensus():
 
 @app.route('/', methods=['GET'])
 def root():
-    return render_template("index.html", title = 'Projects')
+    return render_template("index.html", title = 'Index')
+
+@app.route('/visualize', methods=['GET'])
+def visualize():
+    return render_template("visualize.html", title = 'Status')
 
 
 
