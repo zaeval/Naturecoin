@@ -27,4 +27,4 @@ If you want to support or fund our project, here are contacts and bitcoin addres
 
 - address: 1ASgdHTtHit9jSey8ZWz5NMkgkC3k5EaUB
 
-<p align="center"><img width="40%" src="img/bitcoin_adress.jpeg" /></p>
+<p align="center"><img width="40%" src="img/bitcoin_address.jpeg" /></p>
