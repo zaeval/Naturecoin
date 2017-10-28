@@ -21,7 +21,7 @@
         app:bb_tabXmlResource="@xml/bottombar_tabs"
         app:bb_activeTabColor="#51C4C1"
         app:bb_inActiveTabColor="#51C4C1"
-        app:bb_inActiveTabAlpha="0.5"
+        app:bb_inActiveTabAlpha="0.2"
         android:background="#F1F1F1"
         app:bb_behavior="shifting|underNavbar"/>
     <android.support.v7.widget.Toolbar
