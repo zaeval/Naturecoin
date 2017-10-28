@@ -10,6 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.LogActivity;
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
@@ -25,6 +28,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String mParam2;
 
     RelativeLayout pointBanner;
+    public static TextView ntc;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -64,7 +68,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         pointBanner = (RelativeLayout) rootView.findViewById(R.id.point_banner);
         pointBanner.setOnClickListener(this);
-
+        ntc = (TextView) rootView.findViewById(R.id.ntc_tv);
         return rootView;
     }
 

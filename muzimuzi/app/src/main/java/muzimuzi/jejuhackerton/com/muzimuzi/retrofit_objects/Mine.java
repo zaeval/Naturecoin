@@ -24,6 +24,47 @@ public class Mine {
      */
     int index;
     String message;
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getPrevious_hash() {
+        return previous_hash;
+    }
+
+    public void setPrevious_hash(String previous_hash) {
+        this.previous_hash = previous_hash;
+    }
+
+    public int getProof() {
+        return proof;
+    }
+
+    public void setProof(int proof) {
+        this.proof = proof;
+    }
+
+    public List<Transaction> getTransactions() {
+        return Transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        Transactions = transactions;
+    }
+
     String previous_hash;
     int proof;
     List<Transaction> Transactions;

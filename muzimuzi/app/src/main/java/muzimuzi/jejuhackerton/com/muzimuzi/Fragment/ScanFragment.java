@@ -1,15 +1,33 @@
 package muzimuzi.jejuhackerton.com.muzimuzi.Fragment;
 
+import android.content.Context;
+import android.graphics.PointF;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
+
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Bin;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
-public class ScanFragment extends Fragment {
+public class ScanFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -19,6 +37,15 @@ public class ScanFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private boolean loadingCheck;
+
+    private MaterialDialog loadingDialog;
+    private MaterialDialog resultDialog;
+
+    Thread thread;
+
+    public static final int SEND_INFORMATION = 0;
+    public static final int SEND_STOP = 1;
 
     public ScanFragment() {
         // Required empty public constructor
@@ -55,7 +82,8 @@ public class ScanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scan, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
 
+        return rootView;
+    }
 }

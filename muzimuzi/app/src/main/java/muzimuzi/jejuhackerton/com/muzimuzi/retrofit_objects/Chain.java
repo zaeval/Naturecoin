@@ -9,8 +9,25 @@ import java.util.List;
 public class Chain {
     List<ChainObject> chain;
     int length;
+
+    public List<ChainObject> getChain() {
+        return chain;
+    }
+
+    public void setChain(List<ChainObject> chain) {
+        this.chain = chain;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
     /*
     {
+
   "chain": [
     {
       "index": 1,

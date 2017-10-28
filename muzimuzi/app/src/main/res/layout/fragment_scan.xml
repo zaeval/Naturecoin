@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="muzimuzi.jejuhackerton.com.muzimuzi.Fragment.ScanFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="battle_planner" />
+        android:layout_height="46dp"
+        android:background="@drawable/bg_tap_s"
+        />
+
 
 </FrameLayout>
