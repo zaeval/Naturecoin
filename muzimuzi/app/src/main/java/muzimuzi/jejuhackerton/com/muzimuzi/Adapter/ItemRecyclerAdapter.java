@@ -18,6 +18,7 @@ import java.util.List;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Transaction;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
 
 /**
@@ -36,10 +37,18 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
         final Transaction data = itemList.get(i);
-        holder.sender.setText(data.getSender());
-        holder.recipient.setText(data.getRecipient());
+        String sender = data.getSender();
+        String recipient = data.getRecipient();
+
+        if(sender.equals(Util.getMacAddress2Hash(context))){
+            sender = "Me";
+        }
+        else if(recipient.equals(Util.getMacAddress2Hash(context))){
+            recipient = "Me";
+        }
+        holder.sender.setText(sender);
+        holder.recipient.setText(recipient);
         holder.amount.setText(String.valueOf(data.getAmount()));
-        int resID;
     }
 
     @Override

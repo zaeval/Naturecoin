@@ -40,12 +40,12 @@
                 android:textStyle="bold"
                 android:textColor="#ffffff"
                 android:lineSpacingExtra="25.2sp"
-                tools:text="26.00 NTC"
+                tools:text="UNKNOWN NTC"
                 android:id="@+id/ntc_tv"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="46dp"
                 android:layout_centerHorizontal="true"
-                android:text="26.00 NTC" />
+                android:text="UNKNOWN NTC" />
 
             <TextView
                 android:layout_width="wrap_content"

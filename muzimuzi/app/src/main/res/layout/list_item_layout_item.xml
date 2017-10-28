@@ -4,7 +4,7 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/item_1"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="100dp"
     android:layout_marginBottom="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:padding="10dp"
+        android:background="#ffffff"
         card_view:cardCornerRadius="3dp"
         card_view:cardElevation="3dp">
 
@@ -32,37 +32,38 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:layout_height="80dp"
+                    android:textSize="8sp"
                     android:id="@+id/log_sender"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center"
                     />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="25sp"
+                    android:textSize="8sp"
                     android:text=" -> "
                     tool:text = " -> "
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:gravity="center"
 
                     />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:layout_height="80dp"
+                    android:textSize="10sp"
                     android:id="@+id/log_recipient"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center"
 
                     />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:layout_height="80dp"
+                    android:textSize="8sp"
                     android:id="@+id/log_amount"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:gravity="center"
 
                     />

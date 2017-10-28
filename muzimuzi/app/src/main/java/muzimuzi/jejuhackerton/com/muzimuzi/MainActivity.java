@@ -32,6 +32,7 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.Adapter.MainViewPagerAdapter;
+import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.HomeFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.ScanFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.SendFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (qrCodeReaderView != null) {
                         qrCodeReaderView.stopCamera();
                         qrCodeReaderView.setVisibility(View.INVISIBLE);
+                        HomeFragment.ntc.setText(Util.sum +" ntc");
                     }
                 } else if (position == 1) {
                     ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
