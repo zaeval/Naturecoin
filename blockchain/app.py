@@ -3,9 +3,12 @@ import json
 from time import time
 from urllib.parse import urlparse
 from uuid import uuid4
-
 import requests
 from flask import Flask, jsonify, request, render_template
+import atexit
+import datetime
+
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
@@ -184,6 +187,7 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
+
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
@@ -193,19 +197,20 @@ def mine():
 
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mined a new coin.
+    if len(blockchain.current_transactions) == 0:
+        response = {'message': 'There is no current transaction to confirm a block'}
+        return jsonify(response), 501
+
     blockchain.new_transaction(
         sender="0",
         recipient=node_identifier,
         amount=1,
     )
-
+    
     # Forge the new Block by adding it to the chain
     block = blockchain.new_block(proof)
     with open('chain.json', 'w') as outfile:
-        log = {
-                'chain' : blockchain.chain
-              }
-        json.dump(log, outfile)
+        json.dump(blockchain.chain, outfile)
 
 
     response = {
@@ -285,9 +290,93 @@ def root():
 
 @app.route('/visualize', methods=['GET'])
 def visualize():
-    with open('chain.json') as data_file:
-        data = json.load(data_file)
-    return render_template("visualize.html", title = 'Status', response=data)
+    
+    response = {
+        'timestamps': timestamps,
+        'num_users': num_users,
+        'num_transactions': num_transactions,
+        'num_coins': num_coins, 
+        'chain': blockchain.chain
+    }
+
+    return render_template("visualize.html", title = 'Status', response=response)
+
+
+
+# Logs for Visualization
+timestamps = ['x', blockchain.chain[0]['timestamp']]
+num_users = ['users', 0]
+num_transactions = ['transactions', 0]
+num_coins = ['coins', 0]
+
+# Mine(Confirm a block) from server
+def mine_server():
+    # We run the proof of work algorithm to get the next proof...
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+
+    # We must receive a reward for finding the proof.
+    # The sender is "0" to signify that this node has mined a new coin.
+    if len(blockchain.current_transactions) == 0:
+        response = {'message': 'There is no current transaction to confirm a block'}
+        print(response)
+        return 501
+
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
+    
+    # Forge the new Block by adding it to the chain
+    block = blockchain.new_block(proof)
+    with open('chain.json', 'w') as outfile:
+        json.dump(blockchain.chain, outfile)
+
+
+    response = {
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    print(response)
+    return 200
+
+
+
+# define the job
+def monitor():
+
+    r = mine_server()
+    if r == 501:
+        return
+    
+    chain = blockchain.chain
+    chain_len = len(chain)
+    users = []
+    transactions = []
+    datetime = []
+    transaction_amnt = 0
+    # Get information for each request and save it
+    if chain_len > 1:
+        for i in range(1,chain_len):
+            timestamp = chain[i]['timestamp']
+            timestamps.append(timestamp) if timestamp not in timestamps else None
+            for transaction in chain[i]['transactions']:
+                transactions.append(transaction)
+                users.append(transaction['sender']) if transaction['sender'] not in users else None
+                transaction_amnt += float(transaction['amount'])
+
+    num_users.append(len(users))
+    num_transactions.append(len(transactions))
+    num_coins.append(transaction_amnt)
+    start = chain_len - 1
+    idx = start
+    
+    
 
 
 
@@ -298,5 +387,9 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', default=5000, type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
-
+    # init BackgroundScheduler job
+    scheduler = BackgroundScheduler()
+    # in your case you could change seconds to hours
+    scheduler.add_job(monitor, trigger='interval', seconds=3)
+    scheduler.start()
     app.run(host='0.0.0.0', port=port)
