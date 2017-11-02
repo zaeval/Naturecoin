@@ -208,7 +208,7 @@ def mine():
     )
     
     # Forge the new Block by adding it to the chain
-    block = blockchain.new_block(proof)
+    block = blockchain.new_block(proof, last_block['previous_hash'])
     with open('chain.json', 'w') as outfile:
         json.dump(blockchain.chain, outfile)
 
