@@ -9,26 +9,29 @@
 
     <muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager
         android:id="@+id/viewpager"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="57.3dp"
         android:background="#E5E5E5"></muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager>
+
     <com.dlazaro66.qrcodereaderview.QRCodeReaderView
         android:id="@+id/qrdecoderview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="46dp"
+        android:layout_height="0dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:visibility="invisible"
-        android:layout_alignParentStart="true" />
+        android:layout_marginTop="46dp"
+        />
+
     <com.roughike.bottombar.BottomBar
         android:id="@+id/bottomBar"
+
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="57.3dp"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="#F1F1F1"
         app:bb_activeTabColor="#51C4C1"
-        app:bb_behavior="shifting|underNavbar"
         app:bb_inActiveTabAlpha="0.2"
         app:bb_inActiveTabColor="#51C4C1"
         app:bb_tabXmlResource="@xml/bottombar_tabs" />
@@ -45,36 +48,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="25dp"
-                android:layout_marginBottom="12.5dp"
-                android:layout_marginTop="12.5dp"
-                android:id="@+id/toolbar_menu"
-                android:background="@drawable/icon_menu" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+
                 <ImageView
-                    android:layout_width="150dp"
-                    android:layout_height="match_parent"
                     android:id="@+id/toolbar_title"
+                    android:layout_width="143.7dp"
+                    android:layout_height="30dp"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/title_naturecoin" />
+                    android:background="@mipmap/naturecoin" />
             </RelativeLayout>
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_alignParentRight="true"
-                android:id="@+id/toolbar_search"
-                android:background="@drawable/icon_search" />
+
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>

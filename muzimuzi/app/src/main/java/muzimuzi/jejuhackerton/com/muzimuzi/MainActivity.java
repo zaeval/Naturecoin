@@ -20,16 +20,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.zxing.qrcode.QRCodeReader;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
+
+import java.util.ArrayList;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.Adapter.MainViewPagerAdapter;
 import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.HomeFragment;
@@ -38,6 +47,8 @@ import muzimuzi.jejuhackerton.com.muzimuzi.Fragment.SendFragment;
 import muzimuzi.jejuhackerton.com.muzimuzi.View.CustomViewPager;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Bin;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.MyLocationManager;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.SharedPreferencesManager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,11 +71,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MainViewPagerAdapter adapter;
     boolean first_check=true;
     private BottomBar bottomBar;
+    private MyLocationManager myLocationManager;
+    public static LatLng nowLocation = null;
+
+    public static final double DIMENSSION[][]= {{143.7,30,10,10},{79,23.7,16,16.3},{53.7,23.7,16,16.3},{49.7,23.7,16,16.3},{93,23.7,16,16.3}};
     @Override
     protected void onPause() {
         super.onPause();
-        if (qrCodeReaderView != null)
-            qrCodeReaderView.stopCamera();
+//        if (qrCodeReaderView != null)
+//            qrCodeReaderView.stopCamera();
     }
 
     @Override
@@ -75,9 +90,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(myLocationManager != null) {
+            myLocationManager.requestLocationListener();
+            nowLocation = new LatLng(myLocationManager.getMyLocationLat(), myLocationManager.getMyLocationLng());
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        openCamera();
 
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setPagingEnabled(false);
@@ -86,12 +111,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                myLocationManager = new MyLocationManager(getApplicationContext(),null);
+                myLocationManager.getLastLocation();
+                nowLocation = new LatLng(myLocationManager.getMyLocationLat(),myLocationManager.getMyLocationLng());
+
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "권한 거부\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+        };
+        TedPermission.with(getApplicationContext())
+                .setPermissionListener(permissionlistener)
+                .setRationaleMessage("현재위치 기능을 사용하기 위해 필요합니다.")
+                .setDeniedMessage("이후, [설정] > [권한] 에서 권한을 허용할 수 있습니다.")
+                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .check();
 
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
                 if (tabId == R.id.tab_home) {
                     viewPager.setCurrentItem(0);
+
                 } else if (tabId == R.id.tab_qrcode) {
                     viewPager.setCurrentItem(1);
 
@@ -111,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter = new MainViewPagerAdapter(getSupportFragmentManager(), bottomBar.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(5);
+        if (qrCodeReaderView != null)
+            qrCodeReaderView.startCamera();
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -120,35 +169,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onPageSelected(int position) {
+//                int dimensionInDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dimensionInPixel, getResources().getDisplayMetrics());
+//                view.getLayoutParams().height = dimensionInDp;
+//                view.getLayoutParams().width = dimensionInDp;
+//                view.requestLayout();
                 if (position == 0) {
-                    ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.VISIBLE);
-                    ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_naturecoin));
+                    ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.mipmap.naturecoin));
                     if (qrCodeReaderView != null) {
-                        qrCodeReaderView.stopCamera();
-                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+                        qrCodeReaderView.setQRDecodingEnabled(false);
+
+                        qrCodeReaderView.getLayoutParams().height = 0;
                     }
                     HomeFragment.ntc.setText(Util.sum +" NTC");
+                    if(HomeFragment.mMap != null){
+                        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager();
+                        float lat = sharedPreferencesManager.getFloat(SendFragment.SEND_LAT,getApplicationContext());
+                        float lng = sharedPreferencesManager.getFloat(SendFragment.SEND_LNG,getApplicationContext());
+                        LatLng latLng = new LatLng(lat,lng);
+
+                        if(lat == 0 && lng == 0){
+                            if(MainActivity.nowLocation!=null)
+                                latLng = MainActivity.nowLocation;
+                        }
+                        else {
+                            if(HomeFragment.marker != null)
+                                HomeFragment.marker.remove();
+                            HomeFragment.marker = HomeFragment.mMap.addMarker(new MarkerOptions().position(latLng).title("recently transaction location"));
+                            HomeFragment.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,14));
+
+                        }
+                    }
 
                 } else if (position == 1) {
-                    ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
-                    ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_receive));
+                    ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.mipmap.receive));
                     if (qrCodeReaderView != null) {
+                        qrCodeReaderView.getLayoutParams().height = 0;
+                        qrCodeReaderView.setQRDecodingEnabled(false);
 
-                        qrCodeReaderView.stopCamera();
-                        qrCodeReaderView.setVisibility(View.INVISIBLE);
+
                     }
                 } else if (position == 2) {
-                    ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_scan));
                     checkingPermission();
 
                 } else if (position == 3) {
-                    ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_send));
                     if (qrCodeReaderView != null) {
+                        qrCodeReaderView.getLayoutParams().height = 0;
+                        qrCodeReaderView.setQRDecodingEnabled(false);
 
-                        qrCodeReaderView.stopCamera();
-                        qrCodeReaderView.setVisibility(View.INVISIBLE);
                     }
 //                    ((EditText)((SendFragment)adapter.getItem(3)).getView().findViewById(R.id.receipient)).setText(Util.recipient);
 //                    ((SendFragment)getSupportFragmentManager().findFragmentById(R.id.send_fragment)).setText(Util.recipient);
@@ -156,12 +225,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    ((SendFragment)adapter.getItem(3)).setText(Util.recipient);
                     SendFragment.recipientET.setText(Util.recipient);
                 } else if (position == 4) {
-                    ((ImageView) findViewById(R.id.toolbar_search)).setVisibility(View.INVISIBLE);
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.drawable.title_setting));
                     if (qrCodeReaderView != null) {
+                        qrCodeReaderView.getLayoutParams().height = 0;
+                        qrCodeReaderView.setQRDecodingEnabled(false);
 
-                        qrCodeReaderView.stopCamera();
-                        qrCodeReaderView.setVisibility(View.INVISIBLE);
                     }
                 }
             }
@@ -189,16 +257,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 permissionCheck = false;
                 if(first_check) {
-                    openCamera();
                     first_check=false;
-                    Log.d("sibal", "here are start first");
-
+                    qrCodeReaderView.getLayoutParams().height=ViewGroup.LayoutParams.MATCH_PARENT;
+                    // Use this function to enable/disable decoding
+                    qrCodeReaderView.setQRDecodingEnabled(true);
                 }
                 else{
-                    Log.d("sibal", "here are start secondary");
-
-                    qrCodeReaderView.startCamera();
-                    qrCodeReaderView.setVisibility(View.VISIBLE);
+                    qrCodeReaderView.getLayoutParams().height=ViewGroup.LayoutParams.MATCH_PARENT;
+                    qrCodeReaderView.setQRDecodingEnabled(true);
                 }
             }
         }
@@ -249,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
 
         // Use this function to enable/disable decoding
-        qrCodeReaderView.setQRDecodingEnabled(true);
+        qrCodeReaderView.setQRDecodingEnabled(false);
 
         // Use this function to change the autofocus interval (default is 5 secs)
         qrCodeReaderView.setAutofocusInterval(2000L);
@@ -257,8 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Use this function to enable/disable Torch
         qrCodeReaderView.setTorchEnabled(true);
 
-        // Use this function to set front camera preview
-        qrCodeReaderView.setFrontCamera();
+
 
         // Use this function to set back camera preview
         qrCodeReaderView.setBackCamera();
@@ -266,9 +331,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onQRCodeRead(String text, PointF[] points) {
-                qrCodeReaderView.stopCamera();
-                qrCodeReaderView.setVisibility(View.INVISIBLE);
                 Util.recipient=text;
+                qrCodeReaderView.getLayoutParams().height=0;
+                qrCodeReaderView.setQRDecodingEnabled(false);
                 resultDialog = new MaterialDialog.Builder(MainActivity.this)
                         .content("보낼사람 : " + text + " 맞습니까?")
                         .positiveText("예")
@@ -301,8 +366,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        qrCodeReaderView.setVisibility(View.VISIBLE);
-
     }
 
     final Handler handler = new Handler() {
@@ -316,8 +379,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             else if(msg.what == 0) {
                 resultDialog.dismiss();
-                qrCodeReaderView.startCamera();
-                qrCodeReaderView.setVisibility(View.VISIBLE);
+
 
             }
         }

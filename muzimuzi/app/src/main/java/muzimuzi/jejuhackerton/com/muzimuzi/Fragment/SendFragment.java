@@ -1,5 +1,6 @@
 package muzimuzi.jejuhackerton.com.muzimuzi.Fragment;
 
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,9 +14,12 @@ import android.widget.EditText;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import muzimuzi.jejuhackerton.com.muzimuzi.MainActivity;
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Bin;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.MyLocationManager;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.SharedPreferencesManager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,6 +41,9 @@ public class SendFragment extends Fragment {
     public Button sendBtn;
     MaterialDialog loadingDialog;
     MaterialDialog resultDialog;
+
+    public static String SEND_LAT="SENDLAT";
+    public static String SEND_LNG="SENDLNG";
     public SendFragment() {
         // Required empty public constructor
     }
@@ -98,7 +105,13 @@ public class SendFragment extends Fragment {
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
                                 resultDialog.dismiss();
+
+                                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager();
+                                sharedPreferencesManager.putFloat(SEND_LAT, (float) MainActivity.nowLocation.latitude,getContext());
+                                sharedPreferencesManager.putFloat(SEND_LNG, (float) MainActivity.nowLocation.longitude,getContext());
+
                             }
                         })
                         .show();
