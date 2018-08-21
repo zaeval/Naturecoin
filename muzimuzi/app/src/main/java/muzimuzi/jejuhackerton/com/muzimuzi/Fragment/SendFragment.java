@@ -81,7 +81,7 @@ public class SendFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_send, container, false);
         senderET = (EditText) rootView.findViewById(R.id.sender);
-        senderET.setText(Util.getMacAddress2Hash(getContext()));
+        senderET.setText(Util.getMacAddress2Hash());
         senderET.setEnabled(false);
         recipientET = (EditText) rootView.findViewById(R.id.receipient);
         recipientET.setText("");
@@ -121,12 +121,13 @@ public class SendFragment extends Fragment {
                     @Override
                     public void onResponse(Call<Bin> call,
                                            Response<Bin> response) {
-                        if (response.code() == 201) {
+                        if (response.code() == 200) {
                             loadingDialog.dismiss();
                             resultDialog.show();
 
                         } else {
-                            Log.d("sibal", response.message());
+                            Log.d("sibal", String.valueOf(response.body()));
+                            loadingDialog.dismiss();
                             resultDialog.setContent(response.message());
                             resultDialog.show();
                         }

@@ -8,56 +8,95 @@
     android:orientation="vertical"
     tools:context="muzimuzi.jejuhackerton.com.muzimuzi.LogActivity">
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_margin="10dp"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="3dp">
+        android:id="@+id/point_banner"
+        android:layout_height="223.7dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@mipmap/top"></ImageView>
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
-
+            >
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/wallet" />
+                android:id="@+id/imageView2"
+                android:layout_width="58dp"
+                android:layout_height="58.3dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="60.3dp"
+                android:background="@mipmap/coin_2" />
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/current_ntc"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="43dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:text="UNKNOWN NTC"
+                android:textColor="#ffffff"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                tools:text="UNKNOWN NTC" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:id="@+id/current_ntc"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"
-                        android:gravity="center" />
-
-                    <TextView
-                        android:id="@+id/current_money"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center" />
-                </LinearLayout>
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/current_money"
+                android:layout_width="match_parent"
+                android:layout_height="19dp"
+                android:layout_below="@+id/imageView2"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center_horizontal"
+                android:text="0.00 USD"
+                android:textColor="#ffffff"
+                android:textSize="13.3sp"
+                android:textStyle="normal"
+                android:layout_marginBottom="13dp"
+                tools:text="0.00 USD" />
         </LinearLayout>
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="7.3dp"
+        android:layout_marginBottom="10.3dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="7.15dp"
+        android:layout_marginRight="7.15dp"
+        android:layout_height="43dp">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_margin="0dp"
+            android:text="ALL"
+            android:layout_height="match_parent" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="0dp"
+            android:gravity="center"
+            android:text="RECEUVED"
+            android:layout_height="match_parent" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="0dp"
+            android:gravity="center"
+            android:text="SENT"
+            android:layout_height="match_parent" />
 
-    </android.support.v7.widget.CardView>
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
         android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 </LinearLayout>

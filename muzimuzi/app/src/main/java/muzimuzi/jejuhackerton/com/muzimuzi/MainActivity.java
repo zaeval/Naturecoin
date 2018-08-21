@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .check();
 
+
         bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
@@ -240,10 +241,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        Util.myWalletAddress = Util.getMacAddress2Hash(getApplicationContext());
 
         pointBanner = (RelativeLayout) findViewById(R.id.point_banner);
+        PermissionListener permissionlistener2 = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                Util.myWalletAddress = Util.getMacAddress2Hash();
 
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "권한 거부\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+        };
+        TedPermission.with(getApplicationContext())
+                .setPermissionListener(permissionlistener2)
+                .setRationaleMessage("qr코드를 생성하는데 필요합니다.")
+                .setDeniedMessage("이후, [설정] > [권한] 에서 권한을 허용할 수 있습니다.")
+                .setPermissions(Manifest.permission.ACCESS_WIFI_STATE)
+                .check();
     }
 
     @TargetApi(Build.VERSION_CODES.M)

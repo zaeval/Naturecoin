@@ -5,6 +5,6 @@ package muzimuzi.jejuhackerton.com.muzimuzi.util;
  */
 
 public class RetrofitSettings {
-    public final static String BASE_URL = "https://naturecoin.herokuapp.com/";
+    public final static String BASE_URL = "http://13.209.77.97/";
     public final static String DEFAULT_PARAM = "json";
 }

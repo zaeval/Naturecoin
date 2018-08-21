@@ -40,10 +40,10 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         String sender = data.getSender();
         String recipient = data.getRecipient();
 
-        if(sender.equals(Util.getMacAddress2Hash(context))){
+        if(sender.equals(Util.getMacAddress2Hash())){
             sender = "Me";
         }
-        else if(recipient.equals(Util.getMacAddress2Hash(context))){
+        else if(recipient.equals(Util.getMacAddress2Hash())){
             recipient = "Me";
         }
         holder.sender.setText(sender);

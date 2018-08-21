@@ -17,6 +17,7 @@ import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.ChainObject;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Mine;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Transaction;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.SharedPreferencesManager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,6 +29,7 @@ public class LogActivity extends AppCompatActivity {
     public List<Transaction> li;
     private TextView ntc;
     private TextView money;
+    public static String CURRENT_NTC="currentNTC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,21 +64,19 @@ public class LogActivity extends AppCompatActivity {
                                                Response<Chain> response) {
                             if (response.code() == 200) {
                                 Util.sum=100;
-                                Log.d("sibal",  "wallet id : "+Util.getMacAddress2Hash(getApplicationContext()));
                                 Chain chain = response.body();
                                 List<ChainObject> chainObjects = chain.getChain();
                                 for (int i = 0; i < chainObjects.size(); i++) {
                                     List<Transaction> transactions = chainObjects.get(i).getTransactions();
                                     for (int j = 0; j < transactions.size(); j++) {
-                                        Log.d("sibal", transactions.get(j).getSender() + " "+transactions.get(j).getRecipient());
-                                        if (transactions.get(j).getSender().equals(Util.getMacAddress2Hash(getApplicationContext()))) {
+                                        if (transactions.get(j).getSender().equals(Util.getMacAddress2Hash())) {
                                             itemRecyclerAdapter.add(transactions.get(j));
                                             Log.d("sibal", "got");
 
                                             Util.sum-=transactions.get(j).getAmount();
 
                                         }
-                                        else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash(getApplicationContext()))) {
+                                        else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash())) {
                                             itemRecyclerAdapter.add(transactions.get(j));
                                             Log.d("sibal", "got");
 
@@ -85,6 +85,8 @@ public class LogActivity extends AppCompatActivity {
                                         }
                                     }
                                 }
+                                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager();
+                                sharedPreferencesManager.putFloat(CURRENT_NTC,Util.sum,getApplicationContext());
                                 itemRecyclerAdapter.notifyDataSetChanged();
                                 ntc.setText("current NTC : "+ String.valueOf(Util.sum));
                                 Log.d("sibal", li.size() + "");
