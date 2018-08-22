@@ -35,6 +35,7 @@ import muzimuzi.jejuhackerton.com.muzimuzi.LogActivity;
 import muzimuzi.jejuhackerton.com.muzimuzi.MainActivity;
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.SharedPreferencesManager;
+import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
 public class HomeFragment extends Fragment implements View.OnClickListener,OnMapReadyCallback{
     // TODO: Rename parameter arguments, choose names that match
@@ -71,6 +72,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,OnMap
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -90,6 +92,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener,OnMap
         ntc = (TextView) rootView.findViewById(R.id.ntc_tv);
         scrollView = (ScrollView) rootView.findViewById(R.id.scroll);
         scrollView.requestDisallowInterceptTouchEvent(true);
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager();
+        float sum = sharedPreferencesManager.getFloat(LogActivity.CURRENT_NTC,getContext());
+        ntc.setText(sum +" NTC");
+
         return rootView;
     }
 

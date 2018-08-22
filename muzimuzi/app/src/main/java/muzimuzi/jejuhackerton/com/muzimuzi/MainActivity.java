@@ -73,8 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private BottomBar bottomBar;
     private MyLocationManager myLocationManager;
     public static LatLng nowLocation = null;
+    public static final double DIMENSSION[][]= {{143.7,30,16.7,9.7},{79,23.7,16,16.3},{53.7,23.7,16,16.3},{49.7,23.7,16,16.3},{93,23.7,16,16.3}};
 
-    public static final double DIMENSSION[][]= {{143.7,30,10,10},{79,23.7,16,16.3},{53.7,23.7,16,16.3},{49.7,23.7,16,16.3},{93,23.7,16,16.3}};
     @Override
     protected void onPause() {
         super.onPause();
@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (qrCodeReaderView != null)
             qrCodeReaderView.startCamera();
 
+        ((ImageView) findViewById(R.id.toolbar_title)).getLayoutParams().height= (int)getDP(DIMENSSION[0][1],getApplicationContext());
+        ((ImageView) findViewById(R.id.toolbar_title)).getLayoutParams().width= (int)getDP(DIMENSSION[0][0],getApplicationContext());
+
+
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -176,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                view.requestLayout();
                 if (position == 0) {
                     ((ImageView) findViewById(R.id.toolbar_title)).setBackgroundDrawable(getResources().getDrawable(R.mipmap.naturecoin));
+
+
                     if (qrCodeReaderView != null) {
                         qrCodeReaderView.setQRDecodingEnabled(false);
 
@@ -233,6 +239,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 }
+                ((ImageView) findViewById(R.id.toolbar_title)).getLayoutParams().height= (int)getDP(DIMENSSION[position][1],getApplicationContext());
+                ((ImageView) findViewById(R.id.toolbar_title)).getLayoutParams().width= (int)getDP(DIMENSSION[position][0],getApplicationContext());
+                ((RelativeLayout.LayoutParams)((ImageView) findViewById(R.id.toolbar_title)).getLayoutParams()).setMargins(
+                        0,
+                        (int) getDP(DIMENSSION[position][2],getApplicationContext()),
+                        0,
+                        (int) getDP(DIMENSSION[position][3],getApplicationContext())
+                );
+
             }
 
             @Override
@@ -402,6 +417,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
+    public double getDP(double dp,Context context){
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return dp*scale;
+    }
 
 }
 

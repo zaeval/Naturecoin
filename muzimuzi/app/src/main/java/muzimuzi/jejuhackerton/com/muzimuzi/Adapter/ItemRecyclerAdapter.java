@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Transaction;
@@ -27,10 +31,12 @@ import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder> {
 
     private List<Transaction> itemList;
+    private List<Transaction> backUpList;
     Context context;
     public ItemRecyclerAdapter(List<Transaction> itemList, Context context) {
         this.itemList = itemList;
         this.context = context;
+        backUpList = new ArrayList<>();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -41,14 +47,22 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         String recipient = data.getRecipient();
 
         if(sender.equals(Util.getMacAddress2Hash())){
-            sender = "Me";
+            holder.hash.setText( recipient);
+            holder.status.setText("SENT");
+            holder.status.setTextColor(ContextCompat.getColor(context,R.color.sentColor));
+            holder.amount.setTextColor(ContextCompat.getColor(context,R.color.sentColor));
+
         }
         else if(recipient.equals(Util.getMacAddress2Hash())){
-            recipient = "Me";
+            holder.hash.setText( sender);
+            holder.status.setText("RECIEVE");
+            holder.status.setTextColor(ContextCompat.getColor(context,R.color.receiveColor));
+            holder.amount.setTextColor(ContextCompat.getColor(context,R.color.receiveColor));
+
         }
-        holder.sender.setText(sender);
-        holder.recipient.setText(recipient);
+
         holder.amount.setText(String.valueOf(data.getAmount()));
+
     }
 
     @Override
@@ -64,14 +78,14 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView sender;
-        TextView recipient;
+        TextView hash;
+        TextView status;
         TextView amount;
 
         public ViewHolder(View v) {
             super(v);
-            sender = (TextView) v.findViewById(R.id.log_sender);
-            recipient = (TextView)v.findViewById(R.id.log_recipient);
+            hash = (TextView) v.findViewById(R.id.log_hash);
+            status = (TextView)v.findViewById(R.id.log_status);
             amount = (TextView)v.findViewById(R.id.log_amount);
         }
     }
@@ -94,11 +108,40 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 //            context.startActivity(intent);
         }
     }
-    public void add(Transaction item){
+    public void add(Transaction item)
+    {
         itemList.add(item);
+        backUpList.add(item);
     }
     public void removeAll(){
         itemList.removeAll(itemList);
+        backUpList.removeAll(backUpList);
         notifyDataSetChanged();
+    }
+    public void showSENT(){
+        itemList.removeAll(itemList);
+        for(int i =0;i<backUpList.size();++i){
+            Transaction transaction = backUpList.get(i);
+            if(transaction.getSender().equals(Util.getMacAddress2Hash())) {
+                itemList.add(transaction);
+            }
+        }
+        notifyDataSetChanged();
+    }
+    public void showALL(){
+        itemList.removeAll(itemList);
+        itemList.addAll(backUpList);
+        notifyDataSetChanged();
+    }
+    public void showRECEIVE(){
+        itemList.removeAll(itemList);
+        for(int i =0;i<backUpList.size();++i){
+            Transaction transaction = backUpList.get(i);
+            if(transaction.getRecipient().equals(Util.getMacAddress2Hash())) {
+                itemList.add(transaction);
+            }
+        }
+        notifyDataSetChanged();
+
     }
 }

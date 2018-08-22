@@ -2,72 +2,49 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tool="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_1"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:layout_marginBottom="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginTop="10dp"
-    android:orientation="vertical">
+    android:layout_height="65.7dp"
+    android:background="@drawable/border"
+    android:orientation="horizontal">
 
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="#ffffff"
-        card_view:cardCornerRadius="3dp"
-        card_view:cardElevation="3dp">
 
-        <RelativeLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="2"
+            android:layout_marginLeft="14dp"
             android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_centerVertical="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:textSize="8sp"
-                    android:id="@+id/log_sender"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="8sp"
-                    android:text=" -> "
-                    tool:text = " -> "
-                    android:layout_weight="1.5"
-                    android:gravity="center"
-
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:textSize="10sp"
-                    android:id="@+id/log_recipient"
-                    android:layout_weight="2"
-                    android:gravity="center"
-
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="80dp"
-                    android:textSize="8sp"
-                    android:id="@+id/log_amount"
-                    android:layout_weight="2"
-                    android:gravity="center"
-
-                    />
-            </LinearLayout>
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+            <TextView
+                android:textSize="13.3sp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:id="@+id/log_hash"
+                android:gravity="center_vertical"
+                android:text="해쉬해쉬해쉬"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="13.3sp"
+                android:textColor="#47bacf"
+                android:id="@+id/log_status"
+                android:text="RECEIVED"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                />
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:text="100.0NTC"
+            android:id="@+id/log_amount"
+            android:textSize = "20sp"
+            android:textColor="#47bacf"
+            android:layout_height="match_parent" />
 </LinearLayout>
