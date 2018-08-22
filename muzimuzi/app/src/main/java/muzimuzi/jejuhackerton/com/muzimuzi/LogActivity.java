@@ -23,6 +23,7 @@ import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Chain;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.ChainObject;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Mine;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Transaction;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.WrappingTransaction;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_services.BlockChainService;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.SharedPreferencesManager;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
@@ -33,13 +34,13 @@ import retrofit2.Response;
 public class LogActivity extends AppCompatActivity implements View.OnClickListener {
     private RecyclerView recyclerView;
     private ItemRecyclerAdapter itemRecyclerAdapter;
-    public List<Transaction> li;
+    public List<WrappingTransaction> li;
     private TextView ntc;
     private TextView money;
     public static String CURRENT_NTC = "currentNTC";
 
     private boolean checked[] = new boolean[3];
-    private RelativeLayout btns[]= new RelativeLayout[3];
+    private RelativeLayout btns[] = new RelativeLayout[3];
     private TextView btn_contents[] = new TextView[3];
 
     @Override
@@ -57,7 +58,7 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(itemRecyclerAdapter);
 
-        ImageButton back= (ImageButton)findViewById(R.id.back);
+        ImageButton back = (ImageButton) findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,11 +76,55 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
 
         checked[0] = true;
 
-        for(int i =0;i<3;++i){
+        for (int i = 0; i < 3; ++i) {
             btns[i].setOnClickListener(this);
         }
 
         BlockChainService blockChainService = BlockChainService.retrofit.create(BlockChainService.class);
+        Call<Chain> chainCall = blockChainService.chain();
+        chainCall.enqueue(new Callback<Chain>() {
+            @Override
+            public void onResponse(Call<Chain> call, Response<Chain> response) {
+                if (response.code() == 200) {
+                    Util.sum = 100;
+                    Chain chain = response.body();
+                    List<ChainObject> chainObjects = chain.getChain();
+                    for (int i = 0; i < chainObjects.size(); i++) {
+                        List<Transaction> transactions = chainObjects.get(i).getTransactions();
+                        for (int j = 0; j < transactions.size(); j++) {
+                            if (transactions.get(j).getSender().equals(Util.getMacAddress2Hash())) {
+                                itemRecyclerAdapter.add(new WrappingTransaction(transactions.get(j), chainObjects.get(i).getTimestamp()));
+                                Log.d("sibal", "got");
+
+                                Util.sum -= transactions.get(j).getAmount();
+
+                            } else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash())) {
+                                itemRecyclerAdapter.add(new WrappingTransaction(transactions.get(j), chainObjects.get(i).getTimestamp()));
+
+                                Log.d("sibal", "got");
+
+                                Util.sum += transactions.get(j).getAmount();
+
+                            }
+                        }
+                    }
+                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager();
+                    sharedPreferencesManager.putFloat(CURRENT_NTC, Util.sum, getApplicationContext());
+                    itemRecyclerAdapter.notifyDataSetChanged();
+                    ntc.setText("current NTC : " + String.valueOf(Util.sum));
+                    Log.d("sibal", li.size() + "");
+                } else {
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Chain> call, Throwable t) {
+
+            }
+        });
+
         Call<Mine> mineCall = blockChainService.mine();
         mineCall.enqueue(new Callback<Mine>() {
             @Override
@@ -103,13 +148,14 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
                                     List<Transaction> transactions = chainObjects.get(i).getTransactions();
                                     for (int j = 0; j < transactions.size(); j++) {
                                         if (transactions.get(j).getSender().equals(Util.getMacAddress2Hash())) {
-                                            itemRecyclerAdapter.add(transactions.get(j));
+                                            itemRecyclerAdapter.add(new WrappingTransaction(transactions.get(j), chainObjects.get(i).getTimestamp()));
                                             Log.d("sibal", "got");
 
                                             Util.sum -= transactions.get(j).getAmount();
 
                                         } else if (transactions.get(j).getRecipient().equals(Util.getMacAddress2Hash())) {
-                                            itemRecyclerAdapter.add(transactions.get(j));
+                                            itemRecyclerAdapter.add(new WrappingTransaction(transactions.get(j), chainObjects.get(i).getTimestamp()));
+
                                             Log.d("sibal", "got");
 
                                             Util.sum += transactions.get(j).getAmount();
@@ -153,21 +199,21 @@ public class LogActivity extends AppCompatActivity implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        for(int i =0;i<3;++i){
-            if(checked[i]){
-                btns[i].setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.transaction_tab_off));
-                btn_contents[i].setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.tabOff));
+        for (int i = 0; i < 3; ++i) {
+            if (checked[i]) {
+                btns[i].setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.transaction_tab_off));
+                btn_contents[i].setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.tabOff));
             }
-            checked[i]=false;
-            if(v==btns[i]){
-                checked[i]=true;
-                btns[i].setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.transaction_tab_on));
-                btn_contents[i].setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.tabOn));
-                if(i == 0)
+            checked[i] = false;
+            if (v == btns[i]) {
+                checked[i] = true;
+                btns[i].setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.transaction_tab_on));
+                btn_contents[i].setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.tabOn));
+                if (i == 0)
                     itemRecyclerAdapter.showALL();
-                else if(i==1)
+                else if (i == 1)
                     itemRecyclerAdapter.showRECEIVE();
-                else if(i==2)
+                else if (i == 2)
                     itemRecyclerAdapter.showSENT();
 
             }

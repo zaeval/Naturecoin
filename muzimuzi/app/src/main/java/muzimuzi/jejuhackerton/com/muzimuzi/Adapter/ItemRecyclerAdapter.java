@@ -17,11 +17,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
 import muzimuzi.jejuhackerton.com.muzimuzi.R;
 import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.Transaction;
+import muzimuzi.jejuhackerton.com.muzimuzi.retrofit_objects.WrappingTransaction;
 import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
 
 
@@ -30,10 +32,10 @@ import muzimuzi.jejuhackerton.com.muzimuzi.util.Util;
  */
 public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder> {
 
-    private List<Transaction> itemList;
-    private List<Transaction> backUpList;
+    private List<WrappingTransaction> itemList;
+    private List<WrappingTransaction> backUpList;
     Context context;
-    public ItemRecyclerAdapter(List<Transaction> itemList, Context context) {
+    public ItemRecyclerAdapter(List<WrappingTransaction> itemList, Context context) {
         this.itemList = itemList;
         this.context = context;
         backUpList = new ArrayList<>();
@@ -42,7 +44,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     public void onBindViewHolder(ViewHolder holder, int i) {
-        final Transaction data = itemList.get(i);
+        final WrappingTransaction data = itemList.get(i);
         String sender = data.getSender();
         String recipient = data.getRecipient();
 
@@ -62,7 +64,7 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         }
 
         holder.amount.setText(String.valueOf(data.getAmount()));
-
+        holder.date.setText(Util.getDate((long)data.getTimestamp()));
     }
 
     @Override
@@ -81,12 +83,14 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
         TextView hash;
         TextView status;
         TextView amount;
+        TextView date;
 
         public ViewHolder(View v) {
             super(v);
             hash = (TextView) v.findViewById(R.id.log_hash);
             status = (TextView)v.findViewById(R.id.log_status);
             amount = (TextView)v.findViewById(R.id.log_amount);
+            date = (TextView)v.findViewById(R.id.log_date);
         }
     }
     public class MyOnClickListener implements View.OnClickListener{
@@ -108,10 +112,16 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
 //            context.startActivity(intent);
         }
     }
-    public void add(Transaction item)
+    public void add(WrappingTransaction item)
     {
         itemList.add(item);
         backUpList.add(item);
+        itemList.sort(new Comparator<WrappingTransaction>() {
+            @Override
+            public int compare(WrappingTransaction o1, WrappingTransaction o2) {
+                return (int)(o2.getTimestamp() - o1.getTimestamp());
+            }
+        });
     }
     public void removeAll(){
         itemList.removeAll(itemList);
@@ -121,26 +131,44 @@ public class ItemRecyclerAdapter extends RecyclerView.Adapter<ItemRecyclerAdapte
     public void showSENT(){
         itemList.removeAll(itemList);
         for(int i =0;i<backUpList.size();++i){
-            Transaction transaction = backUpList.get(i);
+            WrappingTransaction transaction = backUpList.get(i);
             if(transaction.getSender().equals(Util.getMacAddress2Hash())) {
                 itemList.add(transaction);
             }
         }
+        itemList.sort(new Comparator<WrappingTransaction>() {
+            @Override
+            public int compare(WrappingTransaction o1, WrappingTransaction o2) {
+                return (int)(o2.getTimestamp() - o1.getTimestamp());
+            }
+        });
         notifyDataSetChanged();
     }
     public void showALL(){
         itemList.removeAll(itemList);
         itemList.addAll(backUpList);
+        itemList.sort(new Comparator<WrappingTransaction>() {
+            @Override
+            public int compare(WrappingTransaction o1, WrappingTransaction o2) {
+                return (int)(o2.getTimestamp() - o1.getTimestamp());
+            }
+        });
         notifyDataSetChanged();
     }
     public void showRECEIVE(){
         itemList.removeAll(itemList);
         for(int i =0;i<backUpList.size();++i){
-            Transaction transaction = backUpList.get(i);
+            WrappingTransaction transaction = backUpList.get(i);
             if(transaction.getRecipient().equals(Util.getMacAddress2Hash())) {
                 itemList.add(transaction);
             }
         }
+        itemList.sort(new Comparator<WrappingTransaction>() {
+            @Override
+            public int compare(WrappingTransaction o1, WrappingTransaction o2) {
+                return (int)(o2.getTimestamp() - o1.getTimestamp());
+            }
+        });
         notifyDataSetChanged();
 
     }

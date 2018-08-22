@@ -32,4 +32,9 @@ public class Transaction {
     public void setSender(String sender) {
         this.sender = sender;
     }
+    public Transaction(Transaction tr){
+        this.amount = tr.amount;
+        this.recipient = tr.recipient;
+        this.sender = tr.sender;
+    }
 }

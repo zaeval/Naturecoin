@@ -8,7 +8,9 @@ import android.util.Log;
 import java.net.NetworkInterface;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,11 +21,12 @@ public class Util {
     public static String myWalletAddress = "";
     public static String recipient = "";
     public static float sum = 100;
-    public static String sha256(String str){
+
+    public static String sha256(String str) {
 
         String SHA = "";
 
-        try{
+        try {
 
             MessageDigest sh = MessageDigest.getInstance("SHA-256");
 
@@ -33,17 +36,16 @@ public class Util {
 
             StringBuffer sb = new StringBuffer();
 
-            for(int i = 0 ; i < byteData.length ; i++){
+            for (int i = 0; i < byteData.length; i++) {
 
-                sb.append(Integer.toString((byteData[i]&0xff) + 0x100, 16).substring(1));
+                sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 
             }
 
             SHA = sb.toString();
 
 
-
-        }catch(NoSuchAlgorithmException e){
+        } catch (NoSuchAlgorithmException e) {
 
             e.printStackTrace();
 
@@ -54,10 +56,10 @@ public class Util {
         return SHA;
 
     }
-    public static String getMacAddress2Hash(){
+
+    public static String getMacAddress2Hash() {
 
         String address = getMacAddr();
-        Log.d("sibaal",address);
         return Util.sha256(address);
     }
 
@@ -74,7 +76,7 @@ public class Util {
 
                 StringBuilder res1 = new StringBuilder();
                 for (byte b : macBytes) {
-                    res1.append(String.format("%02X:",b));
+                    res1.append(String.format("%02X:", b));
                 }
 
                 if (res1.length() > 0) {
@@ -85,5 +87,16 @@ public class Util {
         } catch (Exception ex) {
         }
         return "02:00:00:00:00:00";
+    }
+
+    public static String getDate(float timeStamp) {
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일  hh:mm:ss");
+            Date netDate = (new Date((long)(timeStamp * 1000L)));
+            return sdf.format(netDate);
+        } catch (Exception ex) {
+            return "xx";
+        }
     }
 }
