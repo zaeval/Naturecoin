@@ -1,49 +1,155 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="author" content="">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Load D3.js -->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
 
-		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+  <!-- Load billboard.js with style -->
+  <script src="js/billboard.js"></script>
+  <link rel="stylesheet" href="css/billboard.css">
 
-		<!-- Theme used for syntax highlighting of code -->
-		<link rel="stylesheet" href="lib/css/zenburn.css">
+  <style>
+    html {
+      background: linear-gradient(33.7deg, #51C4C1 0%, #87D1A3 100%) no-repeat center center fixed;
+      color: #f7f7f7;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
 
-		<!-- Printing and PDF exports -->
-		<script>
-			var link = document.createElement( 'link' );
-			link.rel = 'stylesheet';
-			link.type = 'text/css';
-			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    }
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+    #TimeseriesChart {
+      color: black;
+    }
 
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
-	</body>
+    div {
+      align: center;
+    }
+
+    h1 {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      flex-wrap: wrap;
+      width: 120vw;
+      max-width: 1200px;
+      margin-left: -50px;
+      margin: 0 auto;
+      min-height: 100vh;
+      flex-direction: column-reverse;
+    }
+
+    .block {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      border: 2px solid #f7f7f7;
+      margin: 10px;
+
+    }
+
+    .transaction {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      margin: 5px;
+      border: 2px solid #f7f7f7;
+    }
+  </style>
+</head>
+
+<body>
+  <p align="center">
+    <img width="40%" src="img/logo.png" />
+  </p>
+  <div align="center" class="header">
+      <h1>{{response['num_users'][-1]}} users have made {{response['num_transactions'][-1]}} transactions
+          <br> with {{response['num_coins'][-1]}} coins
+      </h1>
+  </div>
+  <div align="center" id="TimeseriesChart"></div>
+  <div align="center" class="chain-header">
+    <h1>Chain</h1>
+  </div>
+  <div class="container">
+    {% for block in response['chain'] %}
+    <div class='block'>
+      <h2 align=center> Block {{block.index}}</h2>
+      {% for transaction in block.transactions %}
+      <div class='transaction'>
+        <li>Sender: {{ transaction.sender }}</li>
+        <li>Recipient: {{ transaction.recipient }}</li>
+        <li>Amount: {{ transaction.amount }}</li>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <style>
+    #TimeSeriesChart {
+      width: 50%;
+      height: 50%;
+    }
+  </style>
+  <script>
+    // Script
+    var timestamps = {{ response['timestamps'] | safe }};
+    var datetime = timestamps.map((timestamp) => { t = new Date(timestamp * 1000); return t; });
+    datetime[0] = 'x';
+    var num_users = {{ response['num_users'] | safe }};
+    var num_transactions = {{ response['num_transactions'] | safe }};
+    var num_coins = {{ response['num_coins'] | safe }};
+    var chain = {{ response['chain']| safe }}
+    var chart = bb.generate({
+      "data": {
+        "size": {
+          "height": 400,
+          "width": 400
+        },
+        "x": "x",
+        "columns": [
+          datetime,
+          num_coins,
+          num_transactions
+        ]
+      },
+      "axis": {
+        "x": {
+          "type": "timeseries",
+          "tick": {
+            "format": "%Y-%m-%d %H:%M:%S"
+          },
+        "range": {
+          "max": {"x": "2017-10-29 00:00:00"},
+          "min": {"x": "2017-10-29 24:00:00"}
+          }
+        }
+      },
+      "bindto": "#TimeseriesChart"
+    });
+
+    setTimeout(function () {
+      chart.load({
+        columns: [
+          num_users
+        ]
+      });
+    }, 1000);
+
+
+  </script>
+</body>
+
 </html>

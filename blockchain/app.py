@@ -1,13 +1,13 @@
 import hashlib
-import json
+import json, ast
 from time import time
-from urllib.parse import urlparse
+from urlparse import urlparse
 from uuid import uuid4
 import requests
 from flask import Flask, jsonify, request, render_template
 import atexit
 import datetime
-
+import os
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -17,9 +17,17 @@ class Blockchain:
         self.current_transactions = []
         self.chain = []
         self.nodes = set()
+        # Logs for Visualization
+        self.timestamps = ['x', time(),]
+        self.num_users = ['users', 0,]
+        self.num_transactions = ['transactions', 0,]
+        self.num_coins = ['coins', 0,]
+
 
         # Create the genesis block
         self.new_block(previous_hash='1', proof=100)
+
+
 
     def register_node(self, address):
         """
@@ -68,14 +76,14 @@ class Blockchain:
         :return: True if our chain was replaced, False if not
         """
 
-        neighbours = self.nodes
+        node_list = self.nodes
         new_chain = None
 
         # We're only looking for chains longer than ours
         max_length = len(self.chain)
 
         # Grab and verify the chains from all the nodes in our network
-        for node in neighbours:
+        for node in node_list:
             response = requests.get('http://{}/chain'.format(node))
 
             if response.status_code == 200:
@@ -94,6 +102,25 @@ class Blockchain:
 
         return False
 
+
+    def broadcast_block(self, block):
+        node_list = self.nodes
+
+        for node in node_list:
+            try:
+                print(block)
+                r = requests.post('http://{}/blocks/add'.format(node), json=block)
+
+
+                print(r.content.message + " in {}".format(node))
+            except:
+                print("Failed to broadcast. The block is already placed or manipulation is suspected.")
+                return
+
+
+
+
+
     def new_block(self, proof, previous_hash=None):
         """
         Create a new Block in the Blockchain
@@ -110,12 +137,25 @@ class Blockchain:
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
         }
 
+        # Forge block into blockchain
+        self.chain.append(block)
+
+        # Broadcast block to other nodes
+        if len(self.nodes) != 0:
+            self.broadcast_block(block)
+
+
+        self.timestamps.append(block['timestamp'])
+        self.num_transactions.append(len(block['transactions']))
+        self.num_users.append(len(set([i['sender'] for i in block['transactions']] + [j['recipient'] for j in block['transactions']])))
+        self.num_coins.append(sum([int(i['amount']) for i in block['transactions']]) + self.num_coins[-1])
+
+
+
         # Reset the current list of transactions
         self.current_transactions = []
-
-        self.chain.append(block)
         return block
-        
+
     def new_transaction(self, sender, recipient, amount):
         """
         Creates a new transaction to go into the next mined Block
@@ -186,8 +226,24 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
+# Check if the chaindata exists 
+if os.path.isfile('chain.json'):
+   with open('chain.json', 'r') as f:
+        chaindata = json.loads(f.read())
+        # Remove 'u' chars
+        chaindata = ast.literal_eval(json.dumps(chaindata))
+        blockchain.timestamps = ['x', chaindata[0]['timestamp'], chaindata[0]['timestamp']]        
+        # Analyze the data
+        for block in chaindata:
+            blockchain.timestamps.append(block['timestamp'])
+            blockchain.num_transactions.append(len(block['transactions']))
+            blockchain.num_users.append(len(set([i['sender'] for i in block['transactions']] + [j['recipient'] for j in block['transactions']])))
+            blockchain.num_coins.append(sum([int(i['amount']) for i in block['transactions']]) + blockchain.num_coins[-1]) 
+        # Change blockchain data
+        blockchain.chain = chaindata
 
-
+        print(blockchain.timestamps)
+        print(blockchain.num_transactions)
 @app.route('/mine', methods=['GET'])
 def mine():
     # We run the proof of work algorithm to get the next proof...
@@ -201,14 +257,18 @@ def mine():
         response = {'message': 'There is no current transaction to confirm a block'}
         return jsonify(response), 501
 
-    blockchain.new_transaction(
-        sender="0",
-        recipient=node_identifier,
-        amount=1,
-    )
-    
+    mine_tx = {'sender': "0", 'recipient':node_identifier, 'amount': 25}
+    if mine_tx not in blockchain.current_transactions:
+        blockchain.new_transaction(
+            sender=mine_tx['sender'],
+            recipient= mine_tx['recipient'],
+            amount = mine_tx['amount']
+            )
+
     # Forge the new Block by adding it to the chain
-    block = blockchain.new_block(proof, last_block['previous_hash'])
+    block = blockchain.new_block(proof)
+    
+    # Update the chaindata
     with open('chain.json', 'w') as outfile:
         json.dump(blockchain.chain, outfile)
 
@@ -222,21 +282,47 @@ def mine():
     }
     return jsonify(response), 200
 
+# Add broadcast block
+@app.route('/blocks/add', methods=['POST'])
+def add_block():
+    block = request.get_json() or request.form
+
+    # Check the required fields
+    required = ['index', 'previous_hash', 'proof', 'timestamp', 'transactions' ]
+    if not all(k in block for k in required):
+        return 'Missing values', 400
+    # Remove 'u' chars
+    block = ast.literal_eval(json.dumps(block))
+    # Validate the block
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    if blockchain.valid_proof(last_proof, block.get('proof')):
+        blockchain.chain.append(block)
+        response = {
+        'message': 'Block is broadcasted',
+        }
+
+    return jsonify(response), 200
+
+
+
 
 @app.route('/transactions/new', methods=['POST'])
 def new_transaction():
     values = request.get_json() or request.form
 
+    print(values)
     # Check that the required fields are in the POST'ed data
     required = ['sender', 'recipient', 'amount']
     if not all(k in values for k in required):
         return 'Missing values', 400
-
+    # Remove 'u' chars
+    values = ast.literal_eval(json.dumps(values))
     # Create a new Transaction
-    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+    index = blockchain.new_transaction(values["sender"], values["recipient"], float(values["amount"]))
 
     response = {'message': 'Transaction will be added to Block {}'.format(index)}
-    return jsonify(response), 201
+    return jsonify(response), 200
 
 
 
@@ -284,33 +370,34 @@ def consensus():
 
     return jsonify(response), 200
 
-@app.route('/', methods=['GET'])
-def root():
-    return render_template("index.html", title = 'Index')
 
-@app.route('/visualize', methods=['GET'])
+@app.route('/', methods=['GET'])
 def visualize():
-    
+
+
+
     response = {
-        'timestamps': timestamps,
-        'num_users': num_users,
-        'num_transactions': num_transactions,
-        'num_coins': num_coins, 
+        'timestamps': blockchain.timestamps,
+        'num_users': blockchain.num_users,
+        'num_transactions': blockchain.num_transactions,
+        'num_coins': blockchain.num_coins,
         'chain': blockchain.chain
     }
 
-    return render_template("visualize.html", title = 'Status', response=response)
+    print(response)
+    return render_template("index.html", title = 'Status', response=response)
 
 
-
-# Logs for Visualization
-timestamps = ['x', blockchain.chain[0]['timestamp']]
-num_users = ['users', 0]
-num_transactions = ['transactions', 0]
-num_coins = ['coins', 0]
 
 # Mine(Confirm a block) from server
 def mine_server():
+    # Throw if there is no current transaction
+    if len(blockchain.current_transactions) == 0:
+        response = {'message': 'There is no current transaction to confirm a block'}
+        print(response)
+        return 501
+
+
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
     last_proof = last_block['proof']
@@ -318,19 +405,18 @@ def mine_server():
 
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mined a new coin.
-    if len(blockchain.current_transactions) == 0:
-        response = {'message': 'There is no current transaction to confirm a block'}
-        print(response)
-        return 501
+    mine_tx = {'sender': "0", 'recipient':node_identifier, 'amount': 25}
+    if mine_tx not in blockchain.current_transactions:
+        blockchain.new_transaction(
+            sender=mine_tx['sender'],
+            recipient= mine_tx['recipient'],
+            amount = mine_tx['amount']
+            )
 
-    blockchain.new_transaction(
-        sender="0",
-        recipient=node_identifier,
-        amount=1,
-    )
-    
     # Forge the new Block by adding it to the chain
     block = blockchain.new_block(proof)
+    
+    # Update Chaindata
     with open('chain.json', 'w') as outfile:
         json.dump(blockchain.chain, outfile)
 
@@ -347,36 +433,9 @@ def mine_server():
 
 
 
-# define the job
+# define the job which has to be monitored
 def monitor():
-
-    r = mine_server()
-    if r == 501:
-        return
-    
-    chain = blockchain.chain
-    chain_len = len(chain)
-    users = []
-    transactions = []
-    datetime = []
-    transaction_amnt = 0
-    # Get information for each request and save it
-    if chain_len > 1:
-        for i in range(1,chain_len):
-            timestamp = chain[i]['timestamp']
-            timestamps.append(timestamp) if timestamp not in timestamps else None
-            for transaction in chain[i]['transactions']:
-                transactions.append(transaction)
-                users.append(transaction['sender']) if transaction['sender'] not in users else None
-                transaction_amnt += float(transaction['amount'])
-
-    num_users.append(len(users))
-    num_transactions.append(len(transactions))
-    num_coins.append(transaction_amnt)
-    start = chain_len - 1
-    idx = start
-    
-    
+    mine_server()
 
 
 
@@ -384,12 +443,12 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('-p', '--port', default=5000, type=int, help='port to listen on')
+    parser.add_argument('-p', '--port', default=80, type=int, help='port to listen on')
     args = parser.parse_args()
     port = args.port
     # init BackgroundScheduler job
     scheduler = BackgroundScheduler()
     # in your case you could change seconds to hours
-    scheduler.add_job(monitor, trigger='interval', seconds=3)
+    scheduler.add_job(monitor, trigger='interval', seconds=15)
     scheduler.start()
     app.run(host='0.0.0.0', port=port)
