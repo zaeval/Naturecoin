@@ -1,5 +1,6 @@
 package muzimuzi.jejuhackerton.com.superbin;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.PointF;
 import android.net.wifi.WifiInfo;
@@ -10,9 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+
+import java.util.ArrayList;
 
 import muzimuzi.jejuhackerton.com.superbin.retrofit_objects.Bin;
 import muzimuzi.jejuhackerton.com.superbin.retrofit_services.BlockChainService;
@@ -23,14 +29,15 @@ import retrofit2.Response;
 
 import static muzimuzi.jejuhackerton.com.superbin.util.RetrofitSettings.DEFAULT_PARAM;
 
-public class MainActivity extends AppCompatActivity implements QRCodeReaderView.OnQRCodeReadListener {
-    private QRCodeReaderView qrCodeReaderView;
+public class MainActivity extends AppCompatActivity  {
+    private QRCodeReaderView qrCodeReaderView = null;
     private MaterialDialog loadingDialog;
     private MaterialDialog resultDialog;
     boolean loadingCheck;
     public static final int SEND_INFORMATION = 0;
     public static final int SEND_STOP = 1;
     Thread thread;
+    boolean isReady = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,90 +45,113 @@ public class MainActivity extends AppCompatActivity implements QRCodeReaderView.
         setContentView(R.layout.activity_main);
         qrCodeReaderView = (QRCodeReaderView) findViewById(R.id.qrdecoderview);
 
-        loadingCheck = true;
+        PermissionListener permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
 
-        qrCodeReaderView.setOnQRCodeReadListener(this);
+                loadingCheck = true;
 
-        // Use this function to enable/disable decoding
-        qrCodeReaderView.setQRDecodingEnabled(true);
+                qrCodeReaderView.setOnQRCodeReadListener(new QRCodeReaderView.OnQRCodeReadListener() {
+                    @Override
+                    public void onQRCodeRead(String text, PointF[] points) {
+                        if (loadingCheck) {
+                            loadingDialog = new MaterialDialog.Builder(getApplicationContext())
+                                    .title("처리중입니다")
+                                    .content("조금만 기다려 주십시오.")
+                                    .progress(true, 0)
+                                    .show();
 
-        // Use this function to change the autofocus interval (default is 5 secs)
-        qrCodeReaderView.setAutofocusInterval(2000L);
+                            resultDialog = new MaterialDialog.Builder(getApplicationContext())
+                                    .content("처리가 완료되었습니다.")
+                                    .show();
+                            resultDialog.hide();
+                            BlockChainService blockChainService = BlockChainService.retrofit.create(BlockChainService.class);
 
-        // Use this function to enable/disable Torch
-        qrCodeReaderView.setTorchEnabled(true);
-
-        // Use this function to set front camera preview
-        qrCodeReaderView.setFrontCamera();
-
-        // Use this function to set back camera preview
-        qrCodeReaderView.setBackCamera();
-
-    }
-
-    @Override
-    public void onQRCodeRead(String text, PointF[] points) {
-        if (loadingCheck) {
-            loadingDialog = new MaterialDialog.Builder(this)
-                    .title("처리중입니다")
-                    .content("조금만 기다려 주십시오.")
-                    .progress(true, 0)
-                    .show();
-
-            resultDialog = new MaterialDialog.Builder(this)
-                    .content("처리가 완료되었습니다.")
-                    .show();
-            resultDialog.hide();
-            BlockChainService blockChainService = BlockChainService.retrofit.create(BlockChainService.class);
-
-            WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-            WifiInfo info = manager.getConnectionInfo();
-            String address = info.getMacAddress();
-            Log.d("sibal", Util.sha256(address));
+                            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                            WifiInfo info = manager.getConnectionInfo();
+                            String address = info.getMacAddress();
+                            Log.d("sibal", Util.sha256(address));
 //            Call<Bin> call = blockChainService.newTransactions((new BlockChainService.Transaction(text,Util.sha256(address),1.0f).getJSON()));
-            Call<Bin> call = blockChainService.newTransactions(text, Util.sha256(address), 1.0f);
-            call.enqueue(new Callback<Bin>() {
-                @Override
-                public void onResponse(Call<Bin> call,
-                                       Response<Bin> response) {
-                    if (response.code() == 201) {
-                        loadingDialog.hide();
-                        Log.d("success", response.message());
-                        resultDialog.show();
-                        thread = new Thread();
-                        thread.start();
+                            Call<Bin> call = blockChainService.newTransactions(text, Util.sha256(address), 1.0f);
+                            call.enqueue(new Callback<Bin>() {
+                                @Override
+                                public void onResponse(Call<Bin> call,
+                                                       Response<Bin> response) {
+                                    if (response.code() == 201) {
+                                        loadingDialog.hide();
+                                        Log.d("success", response.message());
+                                        resultDialog.show();
+                                        thread = new Thread();
+                                        thread.start();
 
-                        loadingCheck = true;
-                    } else {
-                        Log.d("sibal", response.message());
-                        resultDialog.setContent(response.message());
-                        resultDialog.show();
-                        thread = new Thread();
-                        thread.start();
+                                        loadingCheck = true;
+                                    } else {
+                                        Log.d("sibal", response.message());
+                                        resultDialog.setContent(response.message());
+                                        resultDialog.show();
+                                        thread = new Thread();
+                                        thread.start();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Bin> call, Throwable t) {
+                                    Log.d("sibal", t.getMessage());
+
+                                    t.printStackTrace();
+                                }
+                            });
+                            loadingCheck = false;
+                        }
                     }
-                }
+                });
 
-                @Override
-                public void onFailure(Call<Bin> call, Throwable t) {
-                    Log.d("sibal", t.getMessage());
+                // Use this function to enable/disable decoding
+                qrCodeReaderView.setQRDecodingEnabled(true);
 
-                    t.printStackTrace();
-                }
-            });
-            loadingCheck = false;
-        }
+                // Use this function to change the autofocus interval (default is 5 secs)
+                qrCodeReaderView.setAutofocusInterval(2000L);
+
+                // Use this function to enable/disable Torch
+                qrCodeReaderView.setTorchEnabled(true);
+
+                // Use this function to set front camera preview
+                qrCodeReaderView.setFrontCamera();
+
+                qrCodeReaderView.startCamera();
+                isReady=true;
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "권한 거부\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+        };
+        TedPermission.with(getApplicationContext())
+                .setPermissionListener(permissionlistener)
+                .setRationaleMessage("QRcode function required camera permissioned")
+                .setDeniedMessage("after [settings]-> [permission] you can give permission.")
+                .setPermissions(Manifest.permission.CAMERA)
+                .check();
+
+
     }
+
+
 
     @Override
     protected void onResume() {
         super.onResume();
-        qrCodeReaderView.startCamera();
+        if(isReady)
+            qrCodeReaderView.startCamera();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        qrCodeReaderView.stopCamera();
+        if(isReady)
+            qrCodeReaderView.stopCamera();
     }
 
     final Handler handler = new Handler() {
