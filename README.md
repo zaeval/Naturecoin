@@ -29,4 +29,4 @@ If you want to support or fund our project, here are contacts and bitcoin addres
 
 <p align="center"><img width="40%" src="img/bitcoin_address.jpeg" /></p>
 
-#For supporting this protocol Contact blockchain developer [Hyungsuk kang](hskang9@gmail.com) for node AWS image.
+# For supporting this protocol Contact blockchain developer [Hyungsuk kang](hskang9@gmail.com) for node AWS image.
