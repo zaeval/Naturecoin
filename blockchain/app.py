@@ -217,6 +217,7 @@ class Blockchain:
 
         guess = '{0}{1}{2}'.format(last_proof, proof, last_hash).encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
+
         return guess_hash[:4] == "0000"
 
 
@@ -252,7 +253,7 @@ def mine():
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
     last_proof = last_block['proof']
-    proof = blockchain.proof_of_work(last_proof)
+    proof = blockchain.proof_of_work(last_block)
 
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mined a new coin.
@@ -408,7 +409,7 @@ def mine_server():
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
     last_proof = last_block['proof']
-    proof = blockchain.proof_of_work(last_proof)
+    proof = blockchain.proof_of_work(last_block)
 
     # We must receive a reward for finding the proof.
     # The sender is "0" to signify that this node has mined a new coin.
@@ -456,6 +457,6 @@ if __name__ == '__main__':
     # init BackgroundScheduler job
     scheduler = BackgroundScheduler()
     # in your case you could change seconds to hours
-    scheduler.add_job(monitor, trigger='interval', seconds=15)
+    scheduler.add_job(monitor, trigger='interval', seconds=3)
     scheduler.start()
     app.run(host='0.0.0.0', port=port)
