@@ -60,7 +60,7 @@ class Blockchain:
                 return False
 
             # Check that the Proof of Work is correct
-            if not self.valid_proof(last_block['proof'], block['proof']):
+            if not self.valid_proof(last_block['proof'], block['proof'], block['previous_hash']):
                 return False
 
             last_block = block
@@ -189,21 +189,24 @@ class Blockchain:
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def proof_of_work(self, last_proof):
+    def proof_of_work(self, last_block):
         """
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
          - p is the previous proof, and p' is the new proof
         """
 
+        last_proof = last_block['proof']
+        last_hash = self.hash(last_block)
+
         proof = 0
-        while self.valid_proof(last_proof, proof) is False:
+        while self.valid_proof(last_proof, proof, last_hash) is False:
             proof += 1
 
         return proof
 
     @staticmethod
-    def valid_proof(last_proof, proof):
+    def valid_proof(last_proof, proof, last_hash):
         """
         Validates the Proof
 
@@ -212,7 +215,7 @@ class Blockchain:
         :return: True if correct, False if not.
         """
 
-        guess = '{0}{1}'.format(last_proof, proof).encode()
+        guess = '{0}{1}{2}'.format(last_proof, proof, last_hash).encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
 
@@ -226,19 +229,19 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
-# Check if the chaindata exists 
+# Check if the chaindata exists
 if os.path.isfile('chain.json'):
    with open('chain.json', 'r') as f:
         chaindata = json.loads(f.read())
         # Remove 'u' chars
         chaindata = ast.literal_eval(json.dumps(chaindata))
-        blockchain.timestamps = ['x', chaindata[0]['timestamp'], chaindata[0]['timestamp']]        
+        blockchain.timestamps = ['x', chaindata[0]['timestamp'], chaindata[0]['timestamp']]
         # Analyze the data
         for block in chaindata:
             blockchain.timestamps.append(block['timestamp'])
             blockchain.num_transactions.append(len(block['transactions']))
             blockchain.num_users.append(len(set([i['sender'] for i in block['transactions']] + [j['recipient'] for j in block['transactions']])))
-            blockchain.num_coins.append(sum([int(i['amount']) for i in block['transactions']]) + blockchain.num_coins[-1]) 
+            blockchain.num_coins.append(sum([int(i['amount']) for i in block['transactions']]) + blockchain.num_coins[-1])
         # Change blockchain data
         blockchain.chain = chaindata
 
@@ -267,7 +270,7 @@ def mine():
 
     # Forge the new Block by adding it to the chain
     block = blockchain.new_block(proof)
-    
+
     # Update the chaindata
     with open('chain.json', 'w') as outfile:
         json.dump(blockchain.chain, outfile)
@@ -296,11 +299,15 @@ def add_block():
     # Validate the block
     last_block = blockchain.last_block
     last_proof = last_block['proof']
-    if blockchain.valid_proof(last_proof, block.get('proof')):
+    if blockchain.valid_proof(last_proof, block.get('proof'), block.get('previous_hash')):
         blockchain.chain.append(block)
         response = {
         'message': 'Block is broadcasted',
         }
+
+    # Update Chaindata
+    with open('chain.json', 'w') as outfile:
+        json.dump(blockchain.chain, outfile)
 
     return jsonify(response), 200
 
@@ -415,7 +422,7 @@ def mine_server():
 
     # Forge the new Block by adding it to the chain
     block = blockchain.new_block(proof)
-    
+
     # Update Chaindata
     with open('chain.json', 'w') as outfile:
         json.dump(blockchain.chain, outfile)
